@@ -10,4 +10,15 @@ executable file: `gcc index.c` (linked)
 
 ### dumping preprocessor to terminal
 
-gcc -E index.c
+`gcc -E index.c`
+
+### Print internal representation graph
+
+```
+gcc -fdump-tree-all-graph -g index.c source.c
+dot.exe -Tpng your_generated_file.dot
+```
+
+if the generated file invalid, [try to fix the syntax manually](https://stackoverflow.com/questions/67247147/graphviz-doesnt-understand-gcc-output)
+
+and then open/view the file using graphviz software
