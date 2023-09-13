@@ -39,3 +39,5 @@ and then open/view the file using graphviz software
 # todo
 
 findout how hook or inject a program works (maybe it has implications with dynamic linker?)
+
+#### [where's C docs?](https://t.me/GNUWeeb/322371)
