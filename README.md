@@ -16,6 +16,15 @@ executable file: `gcc index.c` (linked)
 
 `gcc -E index.c`
 
+### Compile with dynamic link option
+
+```
+gcc -c arithmetic.c util.c
+gcc -shared -o libtests.dll arithmetic.o util.o
+gcc index.c -L. -ltests
+export LD_LIBRARY_PATH=.
+```
+
 ### Print internal representation graph
 
 ```
@@ -29,4 +38,4 @@ and then open/view the file using graphviz software
 
 # todo
 
-findout how hook or inject a program works
+findout how hook or inject a program works (maybe it has implications with dynamic linker?)
