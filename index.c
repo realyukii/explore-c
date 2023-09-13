@@ -1,6 +1,8 @@
 #include "source.h"
+#include <stdio.h>
 
 int main() {
-    add(1, 2);
+    sum(1, 2);
+    printf(sayHello());
     return 0;
 }
