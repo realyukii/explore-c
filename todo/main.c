@@ -45,7 +45,12 @@ static int handle_add(FILE *h)
 
 	fseek(h, 0, SEEK_END);
 
-	fwrite(&d.data, sizeof(d.data), 1, h);
+	// todo: findout why sizeof member vs sizeof struct itself different?
+	// printf("sizeof d: %d\n", d);
+	// printf("sizeof d.data: %d\n", d.data);
+	// getchar();
+
+	fwrite(&d, sizeof(d), 1, h);
 	return 0;
 }
 
