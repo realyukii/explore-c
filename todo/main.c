@@ -45,11 +45,9 @@ static int handle_add(FILE *h)
 
 	fseek(h, 0, SEEK_END);
 
-	// todo: findout why sizeof member vs sizeof struct itself different?
-	// printf("sizeof d: %d\n", d);
-	// printf("sizeof d.data: %d\n", d.data);
+	// printf("sizeof d: %d\n", sizeof(d));
+	// printf("sizeof d.data: %d\n", sizeof(d.data));
 	// getchar();
-
 	// fwrite(&d.data, sizeof(d.data), 1, h); // dunno why not working, and will always write empty string TvT
 	fwrite(&d, sizeof(d), 1, h);
 	return 0;
@@ -210,7 +208,7 @@ int main(void)
 			break;
 		}
 
-		fclose(h);
+		if (n != 3) fclose(h);
 
 		// if (n == 3) {
 			// todo: findout way to set errno inside delete handler and detect in this scope if possible
