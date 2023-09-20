@@ -50,6 +50,7 @@ static int handle_add(FILE *h)
 	// printf("sizeof d.data: %d\n", d.data);
 	// getchar();
 
+	// fwrite(&d.data, sizeof(d.data), 1, h); // dunno why not working, and will always write empty string TvT
 	fwrite(&d, sizeof(d), 1, h);
 	return 0;
 }
@@ -59,6 +60,21 @@ static unsigned show_todo_list(FILE *h)
 	todo d;
 	size_t ret;
 	unsigned i;
+
+	// i = 0;
+	// rewind(h);
+	// struct {
+	// 	char data[510];
+	// } test;
+	// while (1) {
+	// 	ret = fread(&test, 255, 2, h); // why is the first item being read? the count-block is 2 so I expect it will start from second item
+	// 	// and I thought that an uneven number of todo's would cause a segfault since it's not divisible by 2
+	// 	// hmm sepertinya saia miskonsepsi :"
+	// 	if (ret == 0) {
+	// 		break;
+	// 	}
+	// 	printf("  %u. %s\n", ++i, test.data);
+	// }
 
 	rewind(h);
 	printf("========================================\n");
