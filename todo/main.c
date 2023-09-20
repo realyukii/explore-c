@@ -164,6 +164,10 @@ static int handle_delete(FILE *h)
 		fwrite(&d, sizeof(d), 1, th);
 	}
 	fclose(th);
+	fclose(h);
+	remove(store_file);
+	rename(store_file_tmp, store_file);
+	
 	return 0;
 }
 
@@ -208,10 +212,11 @@ int main(void)
 
 		fclose(h);
 
-		if (n == 3) {
-			remove(store_file);
-			rename(store_file_tmp, store_file);
-		}
+		// if (n == 3) {
+			// todo: findout way to set errno inside delete handler and detect in this scope if possible
+			// remove(store_file);
+			// rename(store_file_tmp, store_file);
+		// }
 	} while (n != -1);
 	return 0;
 }
