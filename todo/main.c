@@ -34,28 +34,29 @@ static int menu(void)
 
 static int handle_add(FILE *h)
 {
-	todo d;
-
-	memset(&d, 0, sizeof(d));
+	// ukuran akan sesuai tipe data
+	todo z;
+	// ukuran pointer: 8 byte in x64
+	// uninitialize pointer will cause segfault
+	// reference of reference (&) vs dereference (* or ->)
+	todo *d; // is that pointless if I use struct pointer instead? Dunno why trying struct pointer cause segfault XD
+	memset(&d, 0, sizeof(d)); // If "struct d" is not zeroed with memset, why will the size be 257?
 
 	printf("Enter the todo list: ");
-	if (!fgets(d.data, sizeof(d.data), stdin)) {
+	if (!fgets(d->data, sizeof(d->data), stdin)) {
 		return -1;
 	}
 
 	fseek(h, 0, SEEK_END);
 
-	// printf("sizeof d: %d\n", sizeof(d));
-	// printf("sizeof d.data: %d\n", sizeof(d.data));
-	// getchar();
-	// fwrite(&d.data, sizeof(d.data), 1, h); // dunno why not working, and will always write empty string TvT
-	fwrite(&d, sizeof(d), 1, h);
+	fwrite(d, sizeof(d), 1, h);
 	return 0;
 }
 
 static unsigned show_todo_list(FILE *h)
 {
-	todo d;
+	// terjawab di komen atas tentang pointer
+	todo d; // why if this struct is a struct pointer, I got 0xc0000374 status exit from strace which indicate STATUS_HEAP_CORRUPTION?
 	size_t ret;
 	unsigned i;
 
@@ -74,7 +75,7 @@ static unsigned show_todo_list(FILE *h)
 	// 	printf("  %u. %s\n", ++i, test.data);
 	// }
 
-	rewind(h);
+	rewind(h); 
 	printf("========================================\n");
 	printf("TODO List:\n");
 	i = 0;
@@ -99,7 +100,7 @@ static int handle_show(FILE *h)
 
 static int handle_update(FILE *h)
 {
-	unsigned n, i, choice;
+	unsigned n, choice;
 	todo updated;
 	int ret;
 
@@ -116,6 +117,7 @@ static int handle_update(FILE *h)
 		return 0;
 	}
 
+	// important part to avoid file corrupt: setting the proper offsite
 	fseek(h, (choice - 1) * sizeof(updated), SEEK_SET);
 	printf("Enter updated data: ");
 	if (!fgets(updated.data, sizeof(updated.data), stdin)) {
@@ -145,12 +147,14 @@ static int handle_delete(FILE *h)
 		return 0;
 	}
 
+	// b flag is important in order to avoid mis interpretation, see https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/fopen-wfopen?view=msvc-170#:~:text=Open%20in%20binary%20(untranslated)%20mode
 	th = fopen(store_file_tmp, "wb");
 	if (!th) {
 		perror("Failed to open the store_file_tmp");
 		return -1;
 	}
 
+	// equal to fseek, set offset to zero
 	rewind(h);
 	for (i = 1; i <= n; i++) {
 		todo d;
