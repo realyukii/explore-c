@@ -1,4 +1,4 @@
-# explore-c whole process of compilation pipeline
+# explore whole process of compilation pipeline
 
 - print executable file header: `objdump -f index.exe`
 - print shared object that dynamicly linked at runtime: `ldd index.exe` (in this case the file extension will be .dll since it's windows)
