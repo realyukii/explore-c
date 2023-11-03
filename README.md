@@ -44,7 +44,7 @@ gcc -c arithmetic.c
 # on unix system
 gcc -o unix_loader unix_loader.c
 ./unix_loader
-# on windows system
+# on windows system (not yet done)
 gcc -o win_loader windows_loader.c
 ./win_loader
 ```

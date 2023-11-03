@@ -1,2 +1,12 @@
-todo/*.exe
-todo/*.bin
+# executable file
+*.exe
+# binary file
+*.bin
+# object file
+*.o
+# disassemble file
+*.dump
+# assembly file
+*.s
+# assembly file that interlaced with source lines
+*.lst
