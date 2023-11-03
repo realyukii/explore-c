@@ -10,3 +10,5 @@
 *.s
 # assembly file that interlaced with source lines
 *.lst
+# vscode settings and configuration
+.vscode

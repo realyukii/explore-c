@@ -51,7 +51,7 @@ gcc -o win_loader windows_loader.c
 
 to disable lint error caused by `MAP_ANON` enum, try to enable [this macro](https://ftp.gnu.org/old-gnu/Manuals/glibc-2.2.3/html_node/libc_13.html#:~:text=should%20be%20defined.-,Macro%3A%20_GNU_SOURCE,-If%20you%20define) | [see more](https://unix.stackexchange.com/questions/498176/how-does-use-misc-referenced-in-glibc-work)
 
-#### things that are covered in the practice of making a simple loader
+### Things that are covered in the practice of making a simple loader
 
 doing this process manually instead of generate shared object makes you understand what the operating system linker and loader do
 
@@ -62,9 +62,9 @@ Here's my question related to this topic:
 - [structure object file](https://t.me/idcplc/243299/246739)
 - [How to inspect sections on object code](https://github.com/hasherezade/pe-bear/issues/34)
 
-# todo
+# Todo
 
-findout how hook or inject a program works, maybe it has implications with [runtime linking](https://noise.getoto.net/2021/03/02/how-to-execute-an-object-file-part-1/#:~:text=process%20is%20called-,runtime%20linking,-%3A%20when%20our%20executable)?
+findout how hook or inject a program works, maybe it has implications with [runtime linking](https://noise.getoto.net/2021/03/02/how-to-execute-an-object-file-part-1/#:~:text=process%20is%20called-,runtime%20linking,-%3A%20when%20our%20executable) and some [injection techniques](https://twitter.com/C5pider/status/1555256782590775298#:~:text=Injection%20Techniques)?
 
 ### Reference
 
