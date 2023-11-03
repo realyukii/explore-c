@@ -1,16 +1,16 @@
 # explore-c whole process of compilation pipeline
 
-print executable file header: `objdump -f index.exe`
-print shared object that dynamicly linked at runtime: `ldd index.exe` (in this case the file extension will be .dll since it's windows)
-print symbol table with: `objdump -t index.o`
+- print executable file header: `objdump -f index.exe`
+- print shared object that dynamicly linked at runtime: `ldd index.exe` (in this case the file extension will be .dll since it's windows)
+- print symbol table with: `objdump -t index.o`
 
 ### transforming
 
-assembly file from source code: `gcc -S -fverbose-asm -g -O2 index.c`
-assembly interlaced with source lines: `gcc -g -O0 -c -fverbose-asm -Wa,-adhln index.c > index.lst`
-assembly file from object code: `objdump -S --disassemble index.exe > index.dump`
-object file: `gcc -c index.c` (not an executable & linked) manual link the object file `gcc index.o source.o -o index`
-executable file: `gcc index.c` (linked)
+- assembly file from source code: `gcc -S -fverbose-asm -g -O2 index.c`
+- assembly interlaced with source lines: `gcc -g -O0 -c -fverbose-asm -Wa,-adhln index.c > index.lst`
+- assembly file from object code: `objdump -S --disassemble index.exe > index.dump`
+- object file: `gcc -c index.c` (not an executable & linked) manual link the object file `gcc index.o source.o -o index`
+- executable file: `gcc index.c` (linked)
 
 ### dumping preprocessor to terminal
 
@@ -18,7 +18,7 @@ executable file: `gcc index.c` (linked)
 
 ### Compile with dynamic link option
 
-```
+```bash
 gcc -c arithmetic.c util.c
 gcc -shared -o libtests.dll arithmetic.o util.o
 gcc index.c -L. -ltests
@@ -27,7 +27,7 @@ export LD_LIBRARY_PATH=.
 
 ### Print internal representation graph
 
-```
+```bash
 gcc -fdump-tree-all-graph -g index.c source.c
 dot.exe -Tpng your_generated_file.dot
 ```
@@ -64,7 +64,7 @@ Here's my question related to this topic:
 
 # todo
 
-findout how hook or inject a program works (maybe it has implications with [runtime linking](https://noise.getoto.net/2021/03/02/how-to-execute-an-object-file-part-1/#:~:text=process%20is%20called-,runtime%20linking,-%3A%20when%20our%20executable)?)
+findout how hook or inject a program works, maybe it has implications with [runtime linking](https://noise.getoto.net/2021/03/02/how-to-execute-an-object-file-part-1/#:~:text=process%20is%20called-,runtime%20linking,-%3A%20when%20our%20executable)?
 
 ### Reference
 
