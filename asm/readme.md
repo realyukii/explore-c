@@ -1,0 +1,44 @@
+### Exploring how things work on machine-code / asm level
+
+### Reference that guide me through this journey
+
+- [guyinatuxedo](https://guyinatuxedo.github.io/01-intro_assembly/reversing_assembly/index.html)
+- [fibonacci section](https://www.youtube.com/watch?v=yOyaJXpAYZQ)
+
+### GDB - The GNU Debugger
+
+have several functions and are classified by these category:
+- List of classes of commands
+  - aliases
+  - breakpoints
+  - data
+    - disassemble `...`
+    - set disassembly-flavor `...`
+  - files
+  - internals - developer GDB-only (?)
+  - obscure
+    - record `...`
+  - misc
+  - running - doable commands once the program is running inside GDB
+    - reverse-stepi - Target multi-thread does not support this command. See [the stackoverflow](https://stackoverflow.com/questions/7517236/how-do-i-enable-reverse-debugging-on-a-multi-threaded-program)
+  - stack
+  - status
+    - info register
+  - support
+  - text-user-interface - doable commands once the TUI mode was enabled (?)
+  - tracepoints
+  - user-defined
+  - Unclassified
+
+### Stack
+In order to understand stack, first we need to understand thread. So here's the thing:
+> Something to execute the executable program
+
+What do we mean by "Something"? of course _*the operating system*_ execute the program for us; but specifically, in what way did it do that? the answer is *thread*.
+A thread is conceptually just an instance of execution in a program
+
+- [reference](https://www.bytelab.codes/what-is-memory-part-3-registers-stacks-and-threads/)
+
+#### Ricing TUI GDB kayaknya menarik, biar style syntaxnya lebih colorful :v
+
+[keyword](https://www.google.com/search?q=gdb+styling+configuration&sca_esv=579403293&source=hp&ei=rwRGZbfVE4zm4-EPo9-QqAM&iflsig=AO6bgOgAAAAAZUYSv5TlraUGu0gPhNKsn45n2r_cP1Vl&ved=0ahUKEwj36PCn-qmCAxUM8zgGHaMvBDUQ4dUDCAo&uact=5&oq=gdb+styling+configuration&gs_lp=Egdnd3Mtd2l6IhlnZGIgc3R5bGluZyBjb25maWd1cmF0aW9uMgUQIRigAUjtJ1AAWIIncAF4AJABAJgBeKAB_A6qAQQyMi40uAEDyAEA-AEBwgILEAAYgAQYsQMYgwHCAhEQLhiABBixAxiDARjHARjRA8ICCxAuGIoFGLEDGIMBwgIIEAAYgAQYsQPCAgsQLhiDARixAxiABMICBRAAGIAEwgILEC4YgAQYxwEY0QPCAgYQABgWGB7CAgkQABgNGBMYgATCAggQABgeGA0YE8ICCBAAGBYYHhgPwgIIEAAYCBgeGA3CAggQABgeGA0YD8ICBxAhGKABGAo&sclient=gws-wiz#vhid=AJ22b6VQOQIroM&vssid=l)
