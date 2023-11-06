@@ -42,3 +42,5 @@ A thread is conceptually just an instance of execution in a program
 #### Ricing TUI GDB kayaknya menarik, biar style syntaxnya lebih colorful :v
 
 [keyword](https://www.google.com/search?q=gdb+styling+configuration&sca_esv=579403293&source=hp&ei=rwRGZbfVE4zm4-EPo9-QqAM&iflsig=AO6bgOgAAAAAZUYSv5TlraUGu0gPhNKsn45n2r_cP1Vl&ved=0ahUKEwj36PCn-qmCAxUM8zgGHaMvBDUQ4dUDCAo&uact=5&oq=gdb+styling+configuration&gs_lp=Egdnd3Mtd2l6IhlnZGIgc3R5bGluZyBjb25maWd1cmF0aW9uMgUQIRigAUjtJ1AAWIIncAF4AJABAJgBeKAB_A6qAQQyMi40uAEDyAEA-AEBwgILEAAYgAQYsQMYgwHCAhEQLhiABBixAxiDARjHARjRA8ICCxAuGIoFGLEDGIMBwgIIEAAYgAQYsQPCAgsQLhiDARixAxiABMICBRAAGIAEwgILEC4YgAQYxwEY0QPCAgYQABgWGB7CAgkQABgNGBMYgATCAggQABgeGA0YE8ICCBAAGBYYHhgPwgIIEAAYCBgeGA3CAggQABgeGA0YD8ICBxAhGKABGAo&sclient=gws-wiz#vhid=AJ22b6VQOQIroM&vssid=l)
+
+done automatically by [gef](https://github.com/hugsy/gef) :v
