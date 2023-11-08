@@ -4,10 +4,10 @@ filename:
 filemode:
         .string "wb+"
 
-.global _start
+.global main
 .extern fopen
 .section .text
-_start:
+main:
         subq $8, %rsp
 
         leaq filename(%rip), %rdi
@@ -15,4 +15,5 @@ _start:
         callq fopen
 
         addq $8, %rsp
+        xorl %eax, %eax
         retq
