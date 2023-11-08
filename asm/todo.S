@@ -3,13 +3,49 @@ filename:
 	.string "todo_db.bin"
 filemode:
 	.string "wb+"
-testcontent:
-	.string "first content ^^"
+labelInput:
+	.string "silahkan ketik data: "
 
 .global main
 .extern fopen
 .extern fwrite
 .section .text
+# char *
+print:
+	pushq %rdi
+	callq strlen
+	popq %rdi
+	movl %eax, %edx # param 3
+	movl $1, %eax # syscall number
+	movq %rdi, %rsi # param 2
+	movl $1, %edi # param 1
+	syscall
+
+	retq
+# char *
+strlen:
+	xorl %eax, %eax
+	cmpb $0, (%rdi)
+	je .Lend # if already 0, then return 0
+.Lloop:
+	incl %eax
+	incq %rdi
+	cmpb $0, (%rdi)
+	jne .Lloop # jump until equal
+.Lend:
+	retq
+# char *
+get_input:
+	decl %esi
+	pushq %rdi
+	xorl %eax, %eax # syscall number
+	movl %esi, %edx # param 3
+	movq %rdi, %rsi # param 2
+	xorl %edi, %edi # param 1
+	syscall
+	popq %rdi
+	movb $0, (%rdi, %rax)
+	retq
 main:
 	subq $8, %rsp
 
@@ -17,12 +53,22 @@ main:
 	leaq filemode(%rip), %rsi # param 2
 	callq fopen
 
-	leaq testcontent(%rip), %rdi # param 1
-	movl $16, %esi # param 2
+	subq $40, %rsp
+	movq %rax, %rbx
+
+	leaq labelInput(%rip), %rdi
+	callq print
+
+	movq %rsp, %rdi
+	movl $32, %esi
+	callq get_input
+
+	movq %rsp, %rdi # param 1
+	movl $32, %esi # param 2
 	movl $1, %edx # param 3
-	movq %rax, %rcx # param 4
+	movq %rbx, %rcx # param 4
 	callq fwrite
 
-	addq $8, %rsp
-	xorl %eax, %eax
+	addq $48, %rsp
+	xorl %eax, %eax # return 0
 	retq
