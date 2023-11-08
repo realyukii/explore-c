@@ -14,6 +14,7 @@ strlen:
 	cmpb $0, (%rdi)
 	je .Lend
 .Lloop:
+	# is this ok to use 32-bit incl?
 	incl %eax
 	incq %rdi
 	cmpb $0, (%rdi)
@@ -30,6 +31,7 @@ get_input:
 	syscall
 	popq %rdi
 
+	# why movb use (%rdi, %rax) to indexing while leaq use index(pointer)
 	movb $0, (%rdi, %rax)
 
 	retq
