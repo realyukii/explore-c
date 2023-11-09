@@ -53,20 +53,21 @@ main:
 	leaq filemode(%rip), %rsi # param 2
 	callq fopen
 
-	subq $40, %rsp
-	movq %rax, %rbx
+	pushq %rax
 
 	leaq labelInput(%rip), %rdi
 	callq print
 
+	subq $40, %rsp
+
 	movq %rsp, %rdi
-	movl $32, %esi
+	movl $40, %esi
 	callq get_input
 
 	movq %rsp, %rdi # param 1
-	movl $32, %esi # param 2
+	movl $40, %esi # param 2
 	movl $1, %edx # param 3
-	movq %rbx, %rcx # param 4
+	movq 40(%rsp), %rcx # param 4
 	callq fwrite
 
 	addq $48, %rsp
