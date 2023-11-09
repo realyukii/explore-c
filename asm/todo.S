@@ -70,6 +70,6 @@ main:
 	movq 40(%rsp), %rcx # param 4
 	callq fwrite
 
-	addq $48, %rsp
+	addq $56, %rsp
 	xorl %eax, %eax # return 0
 	retq
