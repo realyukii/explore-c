@@ -48,6 +48,13 @@ get_input:
 	movb %al, (%rdi) # store content len to first byte of rsp
 	movb $0, (%rdi, %rax)
 	retq
+# char *
+insert_data:
+	movzbq (%rdi), %rsi # param 2
+	movl $1, %edx # param 3
+	movq 40(%rdi), %rcx # param 4
+	callq fwrite
+	retq
 main:
 	subq $8, %rsp
 
@@ -67,10 +74,7 @@ main:
 	callq get_input
 
 	movq %rsp, %rdi # param 1
-	movzbq (%rsp), %rsi # param 2
-	movl $1, %edx # param 3
-	movq 40(%rsp), %rcx # param 4
-	callq fwrite
+	callq insert_data
 
 	addq $48, %rsp
 	xorl %eax, %eax # return 0
