@@ -67,8 +67,7 @@ main:
 	callq get_input
 
 	movq %rsp, %rdi # param 1
-	# todo: fix this thing
-	movb (%rsp), %sil # param 2
+	movzbq (%rsp), %rsi # param 2
 	movl $1, %edx # param 3
 	movq 40(%rsp), %rcx # param 4
 	callq fwrite
