@@ -40,10 +40,12 @@ get_input:
 	pushq %rdi
 	xorl %eax, %eax # syscall number
 	movl %esi, %edx # param 3
-	movq %rdi, %rsi # param 2
+	# preserve one byte for content len
+	leaq 1(%rdi), %rsi # param 2
 	xorl %edi, %edi # param 1
 	syscall
 	popq %rdi
+	movb %al, (%rdi) # store content len to first byte of rsp
 	movb $0, (%rdi, %rax)
 	retq
 main:
@@ -53,7 +55,7 @@ main:
 	leaq filemode(%rip), %rsi # param 2
 	callq fopen
 
-	pushq %rax
+	movq %rax, (%rsp) # store file stream to stack
 
 	leaq labelInput(%rip), %rdi
 	callq print
@@ -65,11 +67,12 @@ main:
 	callq get_input
 
 	movq %rsp, %rdi # param 1
-	movl $40, %esi # param 2
+	# todo: fix this thing
+	movb (%rsp), %sil # param 2
 	movl $1, %edx # param 3
 	movq 40(%rsp), %rcx # param 4
 	callq fwrite
 
-	addq $56, %rsp
+	addq $48, %rsp
 	xorl %eax, %eax # return 0
 	retq
