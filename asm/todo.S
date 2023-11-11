@@ -1,4 +1,6 @@
 .section .rodata
+clear:
+	.string "\ec" # todo: findout the right way to clear terminal
 header:
 	.string "====== Todo Program ======\n"
 opt_1:
@@ -69,6 +71,32 @@ insert_data:
 	movq 40(%rdi), %rcx # param 4
 	callq fwrite
 	retq
+show_menu:
+	leaq header(%rip), %rdi
+	callq print
+
+	leaq opt_1(%rip), %rdi
+	callq print
+
+	leaq opt_2(%rip), %rdi
+	callq print
+
+	leaq opt_3(%rip), %rdi
+	callq print
+
+	leaq opt_4(%rip), %rdi
+	callq print
+
+	leaq opt_5(%rip), %rdi
+	callq print
+
+	leaq divider(%rip), %rdi
+	callq print
+
+	leaq labelInput(%rip), %rdi
+	callq print
+
+	retq
 main:
 	subq $8, %rsp
 
@@ -78,13 +106,12 @@ main:
 
 	movq %rax, (%rsp) # store file stream to stack
 
-	leaq labelInput(%rip), %rdi
-	callq print
+	callq show_menu
 
 	subq $40, %rsp
 
-	movq %rsp, %rdi
-	movl $40, %esi
+	movq %rsp, %rdi # param 1
+	movl $40, %esi # param 2
 	callq get_input
 
 	movq %rsp, %rdi # param 1
