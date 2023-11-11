@@ -16,7 +16,9 @@ opt_5:
 divider:
 	.string "==========================\n"
 labelInput:
-	.string "Choose the option: "
+	.string "Choose the option: \n"
+labelData:
+	.string "Masukin data: "
 filename:
 	.string "todo_db.bin"
 filemode:
@@ -66,10 +68,24 @@ get_input:
 	retq
 # char *
 insert_data:
-	movzbq (%rdi), %rsi # param 2
+	leaq labelData(%rip), %rdi
+	callq print
+
+	subq $40, %rsp
+
+	# input data
+	movq %rsp, %rdi # param 1
+	movl $40, %esi # param 2
+	callq get_input
+
+	movq %rsp, %rdi # param 1
+	movzbq (%rsp), %rsi # param 2
 	movl $1, %edx # param 3
-	movq 40(%rdi), %rcx # param 4
+	# 40 +8 for callq from the caller
+	movq 48(%rsp), %rcx # param 4
 	callq fwrite
+
+	addq $40, %rsp
 	retq
 show_menu:
 	leaq header(%rip), %rdi
@@ -108,15 +124,11 @@ main:
 
 	callq show_menu
 
-	subq $40, %rsp
+	# todo: choosen menu
+	# callq choose_menu
 
-	movq %rsp, %rdi # param 1
-	movl $40, %esi # param 2
-	callq get_input
-
-	movq %rsp, %rdi # param 1
 	callq insert_data
 
-	addq $48, %rsp
+	addq $8, %rsp
 	xorl %eax, %eax # return 0
 	retq
