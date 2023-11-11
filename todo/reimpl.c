@@ -12,7 +12,8 @@ struct todo {
 static int menu(void)
 {
   int choice;
-  system("CLS");
+  // system("CLS"); // only for windows
+  printf("\ec"); // only for linux
   printf("====== Todo Program ======\n");
   printf("1. Add\n");
   printf("2. Update\n");
