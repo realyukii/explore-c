@@ -1,10 +1,24 @@
 .section .rodata
+header:
+	.string "====== Todo Program ======\n"
+opt_1:
+	.string "1. Add\n"
+opt_2:
+	.string "2. Update\n"
+opt_3:
+	.string "3. Delete\n"
+opt_4:
+	.string "4. List Todo\n"
+opt_5:
+	.string "5. Exit\n"
+divider:
+	.string "==========================\n"
+labelInput:
+	.string "Choose the option: "
 filename:
 	.string "todo_db.bin"
 filemode:
 	.string "wb+"
-labelInput:
-	.string "silahkan ketik data: "
 
 .global main
 .extern fopen
