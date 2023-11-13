@@ -17,6 +17,8 @@ divider:
 	.string "==========================\n"
 labelInput:
 	.string "Choose the option: "
+invalidOpt:
+	.string "Invalid option\n"
 labelData:
 	.string "Masukin data: "
 filename:
@@ -136,13 +138,26 @@ handle_menu:
 	callq show_menu
 
 	callq choose_menu
-	cmpl $49, %eax
-	jne .Lexit
+	cmpl $49, %eax # opt 1
+	je .Lhandle_add
+	cmpl $50, %eax # opt 2
+	je .Lexit # For now, simply exit because it has not yet been implemented.
+	cmpl $51, %eax # opt 3
+	je .Lexit # For now, simply exit because it has not yet been implemented.
+	cmpl $52, %eax # opt 4
+	je .Lexit # For now, simply exit because it has not yet been implemented.
+	cmpl $53, %eax # opt 5
+	je .Lexit
+	jne .Linvalid_opt
 
+.Lhandle_add:
 	callq insert_data
 
 	xorl %eax, %eax
 	retq
+.Linvalid_opt:
+	leaq invalidOpt(%rip), %rdi
+	callq print	
 .Lexit:
 	movl $1, %eax
 	retq
