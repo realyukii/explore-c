@@ -16,7 +16,7 @@ opt_5:
 divider:
 	.string "==========================\n"
 labelInput:
-	.string "Choose the option: \n"
+	.string "Choose the option: "
 labelData:
 	.string "Masukin data: "
 filename:
@@ -52,9 +52,9 @@ strlen:
 	jne .Lloop # jump until equal
 .Lend:
 	retq
-# char *
+# char *data, int len
 get_input:
-	decl %esi
+	decl %esi # preserve null byte
 	pushq %rdi
 	xorl %eax, %eax # syscall number
 	movl %esi, %edx # param 3
@@ -65,6 +65,22 @@ get_input:
 	popq %rdi
 	movb %al, (%rdi) # store content len to first byte of rsp
 	movb $0, (%rdi, %rax)
+	retq
+# void
+choose_menu:
+	subq $8, %rsp
+
+	movq $0, (%rsp)
+
+	xorl %eax, %eax # syscall number
+	movl $8, %edx # param 3
+	movq %rsp, %rsi # param 2
+	xorl %edi, %edi # param 1
+	syscall
+
+	movzbq (%rsp), %rax
+
+	addq $8, %rsp
 	retq
 # char *
 insert_data:
@@ -116,6 +132,27 @@ show_menu:
 	callq print
 
 	retq
+handle_menu:
+	callq show_menu
+
+	callq choose_menu
+	cmpb $1, (%rax)
+	jne .Lexit
+
+	callq insert_data
+
+	xorl %eax, %eax
+	retq
+.Lexit:
+	movl $1, %eax
+	retq
+loop_menu:
+.Lloop_menu:
+	callq handle_menu
+	cmpb $0, (%rax)
+	je .Lloop_menu
+.Lend_menu:
+	retq
 main:
 	subq $8, %rsp
 
@@ -125,12 +162,7 @@ main:
 
 	movq %rax, (%rsp) # store file stream to stack
 
-	callq show_menu
-
-	# todo: choosen menu
-	# callq choose_menu
-
-	callq insert_data
+	callq loop_menu
 
 	addq $8, %rsp
 	xorl %eax, %eax # return 0
