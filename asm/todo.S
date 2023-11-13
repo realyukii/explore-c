@@ -97,8 +97,8 @@ insert_data:
 	movq %rsp, %rdi # param 1
 	movzbq (%rsp), %rsi # param 2
 	movl $1, %edx # param 3
-	# 40 +8 for callq from the caller
-	movq 48(%rsp), %rcx # param 4
+	# 40 +24 for callq from the caller
+	movq 64(%rsp), %rcx # param 4 - file stream
 	callq fwrite
 
 	addq $40, %rsp
@@ -136,7 +136,7 @@ handle_menu:
 	callq show_menu
 
 	callq choose_menu
-	cmpb $1, (%rax)
+	cmpl $49, %eax
 	jne .Lexit
 
 	callq insert_data
@@ -149,7 +149,7 @@ handle_menu:
 loop_menu:
 .Lloop_menu:
 	callq handle_menu
-	cmpb $0, (%rax)
+	cmpb $0, %al # is it becoming more efficient?
 	je .Lloop_menu
 .Lend_menu:
 	retq
