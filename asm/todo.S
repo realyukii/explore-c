@@ -105,6 +105,7 @@ insert_data:
 
 	addq $40, %rsp
 	retq
+# void
 show_menu:
 	leaq clear(%rip), %rdi
 	callq print
@@ -134,6 +135,7 @@ show_menu:
 	callq print
 
 	retq
+# void
 handle_menu:
 	callq show_menu
 
@@ -153,14 +155,15 @@ handle_menu:
 .Lhandle_add:
 	callq insert_data
 
-	xorl %eax, %eax
+	xorl %eax, %eax # return 0
 	retq
 .Linvalid_opt:
 	leaq invalidOpt(%rip), %rdi
 	callq print	
 .Lexit:
-	movl $1, %eax
+	movl $1, %eax # return 1
 	retq
+# void
 loop_menu:
 .Lloop_menu:
 	callq handle_menu
