@@ -158,7 +158,7 @@ int main(void)
     n = menu();
     ret = handle_menu(n, hdr);
     if (ret != 0) break;
-    if (ret != 3) fclose(hdr);
+    if (n != 3) fclose(hdr);
   } while (n != -1);
   
   return 0;
