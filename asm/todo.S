@@ -158,13 +158,13 @@ handle_menu:
 	jmp .Lcontinue
 .Lcontinue:
 	xorl %eax, %eax # return 0
-	jmp .Lend
+	jmp .Lend_handle_menu
 .Linvalid_opt:
 	leaq invalidOpt(%rip), %rdi
 	callq print
 .Lexit:
 	movl $1, %eax # return 1
-.Lend:
+.Lend_handle_menu:
 	retq
 # void
 loop_menu:
