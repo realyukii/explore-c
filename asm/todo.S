@@ -155,13 +155,16 @@ handle_menu:
 .Lhandle_add:
 	callq insert_data
 
+	jmp .Lcontinue
+.Lcontinue:
 	xorl %eax, %eax # return 0
-	retq
+	jmp .Lend
 .Linvalid_opt:
 	leaq invalidOpt(%rip), %rdi
-	callq print	
+	callq print
 .Lexit:
 	movl $1, %eax # return 1
+.Lend:
 	retq
 # void
 loop_menu:
