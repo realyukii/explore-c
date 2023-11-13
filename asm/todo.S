@@ -158,15 +158,17 @@ list_data:
 	leaq divider(%rip), %rdi
 	callq print
 
-.Lloop_list_data:
-	incl %ebx
-
 	movq %rsp, %rdi # param 1
 	movl $1, %esi # param 2
 	movl $1, %edx # param 3
 	# 48 +24 for callq from the caller
 	movq 72(%rsp), %rcx # param 4
 	callq fread
+	cmpb $0, %al
+	je .Lexit_list_data
+
+.Lloop_list_data:
+	incl %ebx
 
 	movzbl (%rsp), %esi # param 2
 	movq %rsp, %rdi # param 1
@@ -192,6 +194,7 @@ list_data:
 	callq print
 	callq getchar
 
+.Lexit_list_data:
 	addq $40, %rsp
 	popq %rbx
 	retq
