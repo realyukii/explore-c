@@ -1,6 +1,6 @@
 .section .rodata
 clear:
-	.string "\ec" # todo: findout the right way to clear terminal
+	.string "\033c"
 header:
 	.string "====== Todo Program ======\n"
 opt_1:
@@ -88,6 +88,9 @@ insert_data:
 	addq $40, %rsp
 	retq
 show_menu:
+	leaq clear(%rip), %rdi
+	callq print
+
 	leaq header(%rip), %rdi
 	callq print
 
