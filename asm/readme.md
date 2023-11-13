@@ -30,6 +30,10 @@ have several functions and are classified by these category:
   - user-defined
   - Unclassified
 
+### Paradigm
+
+I think it's functional programming
+
 ### Stack
 In order to understand stack, first we need to understand thread. So here's the thing:
 > Something to execute the executable program

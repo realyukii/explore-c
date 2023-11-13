@@ -10,13 +10,17 @@ opt_2:
 opt_3:
 	.string "3. Delete\n"
 opt_4:
-	.string "4. List Todo\n"
+	.string "4. List\n"
 opt_5:
 	.string "5. Exit\n"
 divider:
 	.string "==========================\n"
 labelInput:
 	.string "Choose the option: "
+holdKey:
+	.string "Press Enter to continue..."
+dataFormat:
+	.string "%d\. %s\n"
 invalidOpt:
 	.string "Invalid option\n"
 labelData:
@@ -27,6 +31,10 @@ filemode:
 	.string "wb+"
 
 .global main
+.extern getchar
+.extern rewind
+.extern fread
+#todo .extern fclose
 .extern fopen
 .extern fwrite
 .section .text
@@ -65,8 +73,9 @@ get_input:
 	xorl %edi, %edi # param 1
 	syscall
 	popq %rdi
+	movb $0, (%rdi, %rax) # replace \n with null
+	incb %al # add space for the content len in the db record
 	movb %al, (%rdi) # store content len to first byte of rsp
-	movb $0, (%rdi, %rax)
 	retq
 # void
 choose_menu:
@@ -136,6 +145,57 @@ show_menu:
 
 	retq
 # void
+list_data:
+	pushq %rbx
+	subq $40, %rsp
+
+	xorl %ebx, %ebx
+
+	# 48 +24 for callq from the caller
+	movq 72(%rsp), %rdi # param 1
+	callq rewind
+
+	leaq divider(%rip), %rdi
+	callq print
+
+.Lloop_list_data:
+	incl %ebx
+
+	movq %rsp, %rdi # param 1
+	movl $1, %esi # param 2
+	movl $1, %edx # param 3
+	# 48 +24 for callq from the caller
+	movq 72(%rsp), %rcx # param 4
+	callq fread
+
+	movzbl (%rsp), %esi # param 2
+	movq %rsp, %rdi # param 1
+	movl $1, %edx # param 3
+	# 48 +24 for callq from the caller
+	movq 72(%rsp), %rcx # param 4
+	callq fread
+	pushq %rax
+
+	leaq dataFormat(%rip), %rdi # param 1
+	movl %ebx, %esi # param 2
+	leaq 8(%rsp), %rdx # param 3
+	callq printf
+
+	popq %rax
+	cmpb $0, %al
+	jne .Lloop_list_data
+
+	leaq divider(%rip), %rdi
+	callq print
+	
+	leaq holdKey(%rip), %rdi
+	callq print
+	callq getchar
+
+	addq $40, %rsp
+	popq %rbx
+	retq
+# void
 handle_menu:
 	callq show_menu
 
@@ -147,13 +207,17 @@ handle_menu:
 	cmpl $51, %eax # opt 3
 	je .Lexit # For now, simply exit because it has not yet been implemented.
 	cmpl $52, %eax # opt 4
-	je .Lexit # For now, simply exit because it has not yet been implemented.
+	je .Lhandle_show
 	cmpl $53, %eax # opt 5
 	je .Lexit
 	jne .Linvalid_opt
 
 .Lhandle_add:
 	callq insert_data
+
+	jmp .Lcontinue
+.Lhandle_show:
+	callq list_data
 
 	jmp .Lcontinue
 .Lcontinue:
