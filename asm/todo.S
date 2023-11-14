@@ -193,15 +193,19 @@ list_data:
 	# 56 +24 for callq from the caller
 	movq 80(%rsp), %rcx # param 4
 	callq fread
-	movq 80(%rsp), %rdi
-	callq temp_debug
+
 	pushq %rax # the terminator loop
+	subq $8, %rsp # make it aligned, balancing with pushq %rax
+
+	movq 96(%rsp), %rdi
+	callq temp_debug
 
 	leaq dataFormat(%rip), %rdi # param 1
 	movl %ebx, %esi # param 2
 	leaq 8(%rsp), %rdx # param 3
 	callq printf
 
+	addq $8, %rsp
 	popq %rax
 	cmpb $0, %al
 	jne .Lloop_list_data
