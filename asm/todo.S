@@ -146,11 +146,10 @@ show_menu:
 	callq print
 
 	retq
-# void
+# file stream pointer
 temp_debug:
 	subq $8, %rsp
 
-	movq 96(%rsp), %rdi # +8 (56 +24 +8 from the caller)
 	callq ftell
 
 	leaq temp(%rip), %rdi
@@ -185,6 +184,7 @@ list_data:
 	cmpb $0, %al
 	je .Lexit_list_data
 
+	movq 80(%rsp), %rdi
 	callq temp_debug
 
 	movzbl (%rsp), %esi # param 2
@@ -193,6 +193,7 @@ list_data:
 	# 56 +24 for callq from the caller
 	movq 80(%rsp), %rcx # param 4
 	callq fread
+	movq 80(%rsp), %rdi
 	callq temp_debug
 	pushq %rax # the terminator loop
 
