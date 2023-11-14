@@ -150,7 +150,7 @@ show_menu:
 temp_debug:
 	subq $8, %rsp
 
-	movq 88(%rsp), %rdi # +8 (48 +24 +8 from the caller)
+	movq 96(%rsp), %rdi # +8 (56 +24 +8 from the caller)
 	callq ftell
 
 	leaq temp(%rip), %rdi
@@ -162,12 +162,12 @@ temp_debug:
 # void
 list_data:
 	pushq %rbx
-	subq $40, %rsp
+	subq $48, %rsp # Because printf uses SIMD instructions, we must ensure that it is aligned correctly to prevent a segfault in temp_debug (?)
 
 	xorl %ebx, %ebx
 
-	# 48 +24 for callq from the caller
-	movq 72(%rsp), %rdi # param 1 - file stream handle
+	# 56 +24 for callq from the caller
+	movq 80(%rsp), %rdi # param 1 - file stream handle
 	callq rewind
 
 	leaq divider(%rip), %rdi
@@ -179,8 +179,8 @@ list_data:
 	movq %rsp, %rdi # param 1
 	movl $1, %esi # param 2
 	movl $1, %edx # param 3
-	# 48 +24 for callq from the caller
-	movq 72(%rsp), %rcx # param 4
+	# 56 +24 for callq from the caller
+	movq 80(%rsp), %rcx # param 4
 	callq fread
 	cmpb $0, %al
 	je .Lexit_list_data
@@ -190,8 +190,8 @@ list_data:
 	movzbl (%rsp), %esi # param 2
 	movq %rsp, %rdi # param 1
 	movl $1, %edx # param 3
-	# 48 +24 for callq from the caller
-	movq 72(%rsp), %rcx # param 4
+	# 56 +24 for callq from the caller
+	movq 80(%rsp), %rcx # param 4
 	callq fread
 	callq temp_debug
 	pushq %rax # the terminator loop
@@ -213,7 +213,7 @@ list_data:
 	callq getchar
 
 .Lexit_list_data:
-	addq $40, %rsp
+	addq $48, %rsp
 	popq %rbx
 	retq
 # void
