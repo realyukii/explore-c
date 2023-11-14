@@ -29,8 +29,6 @@ filename:
 	.string "todo_db.bin"
 filemode:
 	.string "wb+"
-temp:
-	.string "%lld\n"
 
 .global main
 .extern getchar
@@ -146,22 +144,10 @@ show_menu:
 	callq print
 
 	retq
-# file stream pointer
-temp_debug:
-	subq $8, %rsp
-
-	callq ftell
-
-	leaq temp(%rip), %rdi
-	movq %rax, %rsi
-	callq printf
-
-	addq $8, %rsp
-	retq
 # void
 list_data:
 	pushq %rbx
-	subq $48, %rsp # Because printf uses SIMD instructions, we must ensure that it is aligned correctly to prevent a segfault in temp_debug (?)
+	subq $48, %rsp # Because printf uses SIMD instructions, we must ensure that it is aligned correctly to prevent a segfault (?)
 
 	xorl %ebx, %ebx
 
@@ -184,9 +170,6 @@ list_data:
 	cmpb $0, %al
 	je .Lexit_list_data
 
-	movq 80(%rsp), %rdi
-	callq temp_debug
-
 	movzbl (%rsp), %esi # param 2
 	movq %rsp, %rdi # param 1
 	movl $1, %edx # param 3
@@ -196,9 +179,6 @@ list_data:
 
 	pushq %rax # the terminator loop
 	subq $8, %rsp # make it aligned, balancing with pushq %rax
-
-	movq 96(%rsp), %rdi
-	callq temp_debug
 
 	leaq dataFormat(%rip), %rdi # param 1
 	movl %ebx, %esi # param 2
