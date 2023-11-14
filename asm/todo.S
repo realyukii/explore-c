@@ -29,6 +29,8 @@ filename:
 	.string "todo_db.bin"
 filemode:
 	.string "wb+"
+temp:
+	.string "%lld\n"
 
 .global main
 .extern getchar
@@ -109,7 +111,7 @@ insert_data:
 	movl %eax, %esi # param 2
 	movl $1, %edx # param 3
 	# 40 +24 for callq from the caller
-	movq 64(%rsp), %rcx # param 4 - file stream
+	movq 64(%rsp), %rcx # param 4 - file stream handle
 	callq fwrite
 
 	addq $40, %rsp
@@ -145,6 +147,19 @@ show_menu:
 
 	retq
 # void
+temp_debug:
+	subq $8, %rsp
+
+	movq 88(%rsp), %rdi # +8 (48 +24 +8 from the caller)
+	callq ftell
+
+	leaq temp(%rip), %rdi
+	movq %rax, %rsi
+	callq printf
+
+	addq $8, %rsp
+	retq
+# void
 list_data:
 	pushq %rbx
 	subq $40, %rsp
@@ -152,7 +167,7 @@ list_data:
 	xorl %ebx, %ebx
 
 	# 48 +24 for callq from the caller
-	movq 72(%rsp), %rdi # param 1
+	movq 72(%rsp), %rdi # param 1 - file stream handle
 	callq rewind
 
 	leaq divider(%rip), %rdi
@@ -170,12 +185,15 @@ list_data:
 	cmpb $0, %al
 	je .Lexit_list_data
 
+	callq temp_debug
+
 	movzbl (%rsp), %esi # param 2
 	movq %rsp, %rdi # param 1
 	movl $1, %edx # param 3
 	# 48 +24 for callq from the caller
 	movq 72(%rsp), %rcx # param 4
 	callq fread
+	callq temp_debug
 	pushq %rax # the terminator loop
 
 	leaq dataFormat(%rip), %rdi # param 1
@@ -248,7 +266,7 @@ main:
 	leaq filemode(%rip), %rsi # param 2
 	callq fopen
 
-	movq %rax, (%rsp) # store file stream to stack
+	movq %rax, (%rsp) # store file stream handle to stack
 
 	callq loop_menu
 
