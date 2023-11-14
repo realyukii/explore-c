@@ -74,8 +74,8 @@ get_input:
 	syscall
 	popq %rdi
 	movb $0, (%rdi, %rax) # replace \n with null
-	incb %al # add space for the content len in the db record
 	movb %al, (%rdi) # store content len to first byte of rsp
+	incb %al # add space for the content len in the db record
 	retq
 # void
 choose_menu:
@@ -106,7 +106,7 @@ insert_data:
 	callq get_input
 
 	movq %rsp, %rdi # param 1
-	movzbq (%rsp), %rsi # param 2
+	movl %eax, %esi # param 2
 	movl $1, %edx # param 3
 	# 40 +24 for callq from the caller
 	movq 64(%rsp), %rcx # param 4 - file stream
@@ -158,6 +158,9 @@ list_data:
 	leaq divider(%rip), %rdi
 	callq print
 
+.Lloop_list_data:
+	incl %ebx
+
 	movq %rsp, %rdi # param 1
 	movl $1, %esi # param 2
 	movl $1, %edx # param 3
@@ -167,16 +170,13 @@ list_data:
 	cmpb $0, %al
 	je .Lexit_list_data
 
-.Lloop_list_data:
-	incl %ebx
-
 	movzbl (%rsp), %esi # param 2
 	movq %rsp, %rdi # param 1
 	movl $1, %edx # param 3
 	# 48 +24 for callq from the caller
 	movq 72(%rsp), %rcx # param 4
 	callq fread
-	pushq %rax
+	pushq %rax # the terminator loop
 
 	leaq dataFormat(%rip), %rdi # param 1
 	movl %ebx, %esi # param 2
