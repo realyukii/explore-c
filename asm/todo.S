@@ -202,7 +202,7 @@ list_data:
 
 	leaq dataFormat(%rip), %rdi # param 1
 	movl %ebx, %esi # param 2
-	leaq 8(%rsp), %rdx # param 3
+	leaq 16(%rsp), %rdx # param 3
 	callq printf
 
 	addq $8, %rsp
@@ -213,11 +213,11 @@ list_data:
 	leaq divider(%rip), %rdi
 	callq print
 	
+.Lexit_list_data:
 	leaq holdKey(%rip), %rdi
 	callq print
 	callq getchar
 
-.Lexit_list_data:
 	addq $48, %rsp
 	popq %rbx
 	retq
