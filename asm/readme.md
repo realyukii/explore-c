@@ -51,8 +51,4 @@ done automatically by [gef](https://github.com/hugsy/gef) :v
 
 ### Todo app in asm
 
-Used libc:
-- fopen
-- fread
-- fwrite
-- ...
+Used libc: just see the .extern section in the `todo.S` file

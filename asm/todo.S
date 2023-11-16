@@ -34,6 +34,7 @@ filemode:
 .extern getchar
 .extern rewind
 .extern fread
+.extern fseek
 #todo .extern fclose
 .extern fopen
 .extern fwrite
@@ -93,7 +94,18 @@ choose_menu:
 
 	addq $8, %rsp
 	retq
-# char *
+# void
+update_data:
+	subq $8, %rsp
+	callq list_data
+
+	movq %rsp, %rdi
+	movl $1, %esi
+	callq get_input
+
+	addq $8, %rsp
+	retq
+# void
 insert_data:
 	leaq labelData(%rip), %rdi
 	callq print
@@ -209,7 +221,7 @@ handle_menu:
 	cmpl $49, %eax # opt 1
 	je .Lhandle_add
 	cmpl $50, %eax # opt 2
-	je .Lexit # For now, simply exit because it has not yet been implemented.
+	je .Lhandle_update
 	cmpl $51, %eax # opt 3
 	je .Lexit # For now, simply exit because it has not yet been implemented.
 	cmpl $52, %eax # opt 4
@@ -224,6 +236,10 @@ handle_menu:
 	jmp .Lcontinue
 .Lhandle_show:
 	callq list_data
+
+	jmp .Lcontinue
+.Lhandle_update:
+	callq update_data
 
 	jmp .Lcontinue
 .Lcontinue:
