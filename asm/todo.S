@@ -107,6 +107,7 @@ update_data:
 	# jika begitu, apakah bisa juga menggunakan register
 	# 32 bit (%edi) saja untuk register %rdi
 	# *eh nvm, 64/8 = 8 byte, LOL
+	# btw it's already mentioned here: https://t.me/GNUWeeb/858639
 	leaq labelUpdate(%rip), %rdi
 	callq print
 
