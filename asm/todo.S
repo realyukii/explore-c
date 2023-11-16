@@ -94,9 +94,10 @@ choose_menu:
 
 	addq $8, %rsp
 	retq
-# void
+# FILE *stream
 update_data:
 	subq $8, %rsp
+
 	callq list_data
 
 	movq %rsp, %rdi
@@ -156,16 +157,15 @@ show_menu:
 	callq print
 
 	retq
-# void
+# FILE *stream
 list_data:
 	pushq %rbx
-	subq $48, %rsp # Because printf uses SIMD instructions, we must ensure that it is aligned correctly to prevent a segfault (?)
+	pushq %rdi # store the file stream on the stack for further use
+	subq $40, %rsp # Because printf uses SIMD instructions, we must ensure that it is aligned correctly to prevent a segfault (?)
 
 	xorl %ebx, %ebx
 
-	# 56 +24 for callq from the caller
-	movq 80(%rsp), %rdi # param 1 - file stream handle
-	callq rewind
+	callq rewind # already passed the file stream as the first parameter
 
 	leaq divider(%rip), %rdi
 	callq print
@@ -176,8 +176,7 @@ list_data:
 	movq %rsp, %rdi # param 1
 	movl $1, %esi # param 2
 	movl $1, %edx # param 3
-	# 56 +24 for callq from the caller
-	movq 80(%rsp), %rcx # param 4
+	movq 40(%rsp), %rcx # param 4
 	callq fread
 	cmpb $0, %al
 	je .Lexit_list_data
@@ -185,8 +184,7 @@ list_data:
 	movzbl (%rsp), %esi # param 2
 	movq %rsp, %rdi # param 1
 	movl $1, %edx # param 3
-	# 56 +24 for callq from the caller
-	movq 80(%rsp), %rcx # param 4
+	movq 40(%rsp), %rcx # param 4
 	callq fread
 
 	pushq %rax # the terminator loop
@@ -210,7 +208,8 @@ list_data:
 	callq print
 	callq getchar
 
-	addq $48, %rsp
+	addq $40, %rsp
+	popq %rdi
 	popq %rbx
 	retq
 # void
@@ -235,10 +234,12 @@ handle_menu:
 
 	jmp .Lcontinue
 .Lhandle_show:
+	movq 16(%rsp), %rdi # parameter 1 - FILE *stream
 	callq list_data
 
 	jmp .Lcontinue
 .Lhandle_update:
+	movq 16(%rsp), %rdi # parameter 1 - FILE *stream
 	callq update_data
 
 	jmp .Lcontinue
