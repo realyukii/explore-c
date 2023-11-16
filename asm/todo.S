@@ -102,6 +102,14 @@ update_data:
 
 	callq list_data
 
+	# *got confused
+	# ukuran pointer memory address itu 8 byte di x86_64
+	# jika begitu, apakah bisa juga menggunakan register
+	# 32 bit (%edi) saja untuk register %rdi
+	# *eh nvm, 64/8 = 8 byte, LOL
+	leaq labelUpdate(%rip), %rdi
+	callq print
+
 	movq %rsp, %rdi
 	movl $1, %esi
 	callq get_input
