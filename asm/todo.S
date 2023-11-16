@@ -21,6 +21,8 @@ labelData:
 	.string "Enter data: "
 labelUpdate:
 	.string "Choose the index you want to modify: "
+invalidChoice:
+	.string "Invalid index, please choose the correct one\n"
 holdKey:
 	.string "Press Enter to continue..."
 dataFormat:
@@ -98,9 +100,14 @@ choose_menu:
 	retq
 # FILE *stream
 update_data:
-	subq $8, %rsp
+	pushq %r12
+	pushq %rbx
+	subq $40, %rsp
 
-	callq list_data
+	movq %rdi, %r12
+
+	callq list_data # already passed the file stream as the first parameter
+	movq %rax, %rbx
 
 	# *got confused
 	# ukuran pointer memory address itu 8 byte di x86_64
@@ -111,11 +118,41 @@ update_data:
 	leaq labelUpdate(%rip), %rdi
 	callq print
 
-	movq %rsp, %rdi
-	movl $1, %esi
+	callq choose_menu
+
+	cmpl %ebx, %eax
+	ja .Linvalid_choice
+
+	cmpl $0, %eax
+	jle .Linvalid_choice
+
+	movq %r12, %rdi # param 1
+	movl %eax, %esi # param 2
+	xorl %edx, %edx # param 3
+	callq fseek
+
+	leaq labelData(%rip), %rdi
+	callq print
+
+	movq %rsp, %rdi # param 1
+	movl $40, %esi # param 2
 	callq get_input
 
-	addq $8, %rsp
+	movq %rsp, %rdi # param 1
+	movl %eax, %edi # param 2
+	movl $1, %edx # param 3
+	movq %r12, %rdx # param 4
+	callq fwrite
+
+	jmp .Lexit_update_data
+.Linvalid_choice:
+	leaq invalidChoice(%rip), %rdi
+	callq print
+.Lexit_update_data:
+	addq $40, %rsp
+	popq %rbx
+	popq %r12
+
 	retq
 # void
 insert_data:
@@ -213,12 +250,13 @@ list_data:
 
 	leaq divider(%rip), %rdi
 	callq print
-	
+
 .Lexit_list_data:
 	leaq holdKey(%rip), %rdi
 	callq print
 	callq getchar
 
+	movl %ebx, %eax # return the total record
 	addq $40, %rsp
 	popq %rdi
 	popq %rbx

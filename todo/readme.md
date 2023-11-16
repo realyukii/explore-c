@@ -15,3 +15,4 @@
 Apakah offset dapat dikatakan [file position indicator](<https://man7.org/linux/man-pages/man3/fseek.3.html#:~:text=fseek()%20function%20sets%20the-,file%20position%20indicator,-for%20the%0A%20%20%20%20%20%20%20stream%20pointed%20to>) (?)
 
 [The explanation](https://man7.org/linux/man-pages/man2/lseek.2.html) of SEEK_SET, SEEK_CUR, and SEEK_END
+Also, here's the constant value described in [this stackoverflow question](https://stackoverflow.com/questions/38226713/fseekf-0-2-how-does-this-work-without-seek-cur-seek-set-or-seek-end)
