@@ -148,6 +148,7 @@ update_data:
 .Linvalid_choice:
 	leaq invalidChoice(%rip), %rdi
 	callq print
+	callq getchar
 .Lexit_update_data:
 	addq $40, %rsp
 	popq %rbx
@@ -252,10 +253,6 @@ list_data:
 	callq print
 
 .Lexit_list_data:
-	leaq holdKey(%rip), %rdi
-	callq print
-	callq getchar
-
 	movl %ebx, %eax # return the total record
 	addq $40, %rsp
 	popq %rdi
@@ -285,6 +282,10 @@ handle_menu:
 .Lhandle_show:
 	movq 16(%rsp), %rdi # parameter 1 - FILE *stream
 	callq list_data
+
+	leaq holdKey(%rip), %rdi
+	callq print
+	callq getchar
 
 	jmp .Lcontinue
 .Lhandle_update:
