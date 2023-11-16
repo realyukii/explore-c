@@ -15,16 +15,18 @@ opt_5:
 	.string "5. Exit\n"
 divider:
 	.string "==========================\n"
-labelInput:
+labelMenu:
 	.string "Choose the option: "
+labelData:
+	.string "Enter data: "
+labelUpdate:
+	.string "Choose the index you want to modify: "
 holdKey:
 	.string "Press Enter to continue..."
 dataFormat:
 	.string "%d\. %s\n"
 invalidOpt:
 	.string "Invalid option\n"
-labelData:
-	.string "Masukin data: "
 filename:
 	.string "todo_db.bin"
 filemode:
@@ -153,7 +155,7 @@ show_menu:
 	leaq divider(%rip), %rdi
 	callq print
 
-	leaq labelInput(%rip), %rdi
+	leaq labelMenu(%rip), %rdi
 	callq print
 
 	retq
