@@ -133,11 +133,6 @@ update_data:
 	cmpl $0, %r13d
 	jle .Linvalid_choice
 
-	movq %r12, %rdi # param 1
-	movl %r13d, %esi # param 2
-	xorl %edx, %edx # param 3
-	callq fseek
-
 	leaq labelData(%rip), %rdi
 	callq print
 
@@ -145,6 +140,24 @@ update_data:
 	movl $40, %esi # param 2
 	callq get_input
 
+	pushq %rax
+	subq $8, %rsp
+
+	# decrement index number
+	decl %r13d
+	# and multiply it with len of record
+	imull %eax, %r13d
+
+	movq %r12, %rdi # param 1
+	movl %r13d, %esi # param 2
+	xorl %edx, %edx # param 3
+	callq fseek
+
+	addq $8, %rsp
+	popq %rax
+
+	# todo: avoid clobber other record by shift it
+	# \if the modified record bigger than the original (?)
 	movq %rsp, %rdi # param 1
 	movl %eax, %esi # param 2
 	movl $1, %edx # param 3
