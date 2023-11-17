@@ -22,11 +22,13 @@ labelData:
 labelUpdate:
 	.string "Choose the index you want to modify: "
 invalidChoice:
-	.string "Invalid index, please choose the correct one\n"
+	.string "Invalid index, please choose the correct one..."
 holdKey:
 	.string "Press Enter to continue..."
 dataFormat:
 	.string "%d\. %s\n"
+intFormat:
+	.string "%d%*c" # supress the new line, see https://stackoverflow.com/a/54393811/22382954
 invalidOpt:
 	.string "Invalid option\n"
 filename:
@@ -100,9 +102,10 @@ choose_menu:
 	retq
 # FILE *stream
 update_data:
-	pushq %r12
-	pushq %rbx
-	subq $40, %rsp
+	pushq %r12 # store file stream passed from parameter
+	pushq %r13 # store result from scanf input
+	pushq %rbx # store total items returned from list_data
+	subq $48, %rsp
 
 	movq %rdi, %r12
 
@@ -118,16 +121,20 @@ update_data:
 	leaq labelUpdate(%rip), %rdi
 	callq print
 
-	callq choose_menu
+	movq $0, (%rsp) # zeroed 1 byte
+	leaq intFormat(%rip), %rdi
+	movq %rsp, %rsi
+	callq scanf
+	movq (%rsp), %r13
 
-	cmpl %ebx, %eax
+	cmpl %ebx, %r13d
 	ja .Linvalid_choice
 
-	cmpl $0, %eax
+	cmpl $0, %r13d
 	jle .Linvalid_choice
 
 	movq %r12, %rdi # param 1
-	movl %eax, %esi # param 2
+	movl %r13d, %esi # param 2
 	xorl %edx, %edx # param 3
 	callq fseek
 
@@ -139,9 +146,9 @@ update_data:
 	callq get_input
 
 	movq %rsp, %rdi # param 1
-	movl %eax, %edi # param 2
+	movl %eax, %esi # param 2
 	movl $1, %edx # param 3
-	movq %r12, %rdx # param 4
+	movq %r12, %rcx # param 4
 	callq fwrite
 
 	jmp .Lexit_update_data
@@ -150,8 +157,9 @@ update_data:
 	callq print
 	callq getchar
 .Lexit_update_data:
-	addq $40, %rsp
+	addq $48, %rsp
 	popq %rbx
+	popq %r13
 	popq %r12
 
 	retq
@@ -220,8 +228,6 @@ list_data:
 	callq print
 
 .Lloop_list_data:
-	incl %ebx
-
 	movq %rsp, %rdi # param 1
 	movl $1, %esi # param 2
 	movl $1, %edx # param 3
@@ -229,6 +235,8 @@ list_data:
 	callq fread
 	cmpb $0, %al
 	je .Lexit_list_data
+
+	incl %ebx
 
 	movzbl (%rsp), %esi # param 2
 	movq %rsp, %rdi # param 1
