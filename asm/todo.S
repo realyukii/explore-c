@@ -157,7 +157,7 @@ update_data:
 	popq %rax
 
 	# todo: avoid clobber other record by shift it
-	# \if the modified record bigger than the original (?)
+	# \if the modified record bigger or smaller than the original (?)
 	movq %rsp, %rdi # param 1
 	movl %eax, %esi # param 2
 	movl $1, %edx # param 3
