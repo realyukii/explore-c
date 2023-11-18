@@ -52,3 +52,5 @@ done automatically by [gef](https://github.com/hugsy/gef) :v
 ### Todo app in asm
 
 Used libc: just see the .extern section in the `todo.S` file
+
+### the size of hello world program is less than 9 mb, atleast it's not [120 mb](https://youtu.be/rPVeu4bsn3U?t=630) XD
