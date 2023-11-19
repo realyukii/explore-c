@@ -17,7 +17,11 @@ Apakah offset dapat dikatakan [file position indicator](<https://man7.org/linux/
 [The explanation](https://man7.org/linux/man-pages/man2/lseek.2.html) of SEEK_SET, SEEK_CUR, and SEEK_END
 Also, here's the constant value described in [this stackoverflow question](https://stackoverflow.com/questions/38226713/fseekf-0-2-how-does-this-work-without-seek-cur-seek-set-or-seek-end)
 
-- it turns out that the stdin buffer doesn't come from current stack, see [libc internals](https://stackoverflow.com/questions/31074433/can-i-dump-stdin-with-gdb#:~:text=contain%20pointers%20to%20internal%20buffers%20containing%20buffered%20data) for how the buffer are implemented
+- it turns out that the stdin buffer doesn't come from current stack, see [glibc internals](https://stackoverflow.com/questions/31074433/can-i-dump-stdin-with-gdb#:~:text=contain%20pointers%20to%20internal%20buffers%20containing%20buffered%20data) for how the buffer are implemented
+
+- baru tau ternyata libc itu bagian dari sebuah standard, dan ada banyak project yang mengimplementasikan standard tersebut: seperti `musl`, `MSVCRT`, `Bionic` dan `glibc` (yg lebih umum digunakan), see [What are the advantages of using musl in place of glibc?](https://www.reddit.com/r/voidlinux/comments/muoqis/what_are_the_advantages_of_using_musl_in_place_of/)
+
+- see, [the standard C library](https://en.wikipedia.org/wiki/Bionic_(software))
 
 - in scanf, is stdin not flushed after user input? or does it only leave the line-feed? no have idea to confirm it
 
