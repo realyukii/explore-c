@@ -10,7 +10,10 @@ menu:
 	.ascii "5. Exit\n"
 	.ascii "==========================\n"
 	.string "Enter the option: "
-
+invalid_opt:
+	.string "Invalid option!"
+temp_str:
+	.string "Add Data\n"
 str_fmt_int:
 	.string "%d"
 
@@ -20,7 +23,7 @@ str_fmt_int:
 .global main
 .section .text
 
-# int show_menu(void);
+# int show_menu(void); todo: exit on ret less than 0
 show_menu:
 	subq $8, %rsp
 
@@ -51,9 +54,54 @@ show_menu:
 	addq $8, %rsp
 	retq
 
+# void menu_add(void)
+menu_add:
+	subq $8, %rsp
+
+	leaq temp_str(%rip), %rdi
+	xorl %eax, %eax
+	callq printf
+
+	addq $8, %rsp
+	retq
+
+# int handle_menu(int n);
+handle_menu:
+	subq $8, %rsp
+
+	cmpl $1, %edi
+	je .Lhandle_add
+
+	cmpl $5, %edi
+	je .Lexit
+
+	jne .Linvalid_opt
+
+.Lhandle_add:
+	callq menu_add
+	jmp .Lcontinue
+
+.Lexit:
+	movl $-1, %eax
+	addq $8, %rsp
+	retq	
+
+.Linvalid_opt:
+	leaq invalid_opt(%rip), %rdi
+	xorl %eax, %eax
+	callq printf
+
+.Lcontinue:
+	xorl %eax, %eax
+	addq $8, %rsp
+	retq
+
 main:
 	subq $8, %rsp
 	callq show_menu
+
+	movl %eax, %edi
+	callq handle_menu
 
 	xorl %eax, %eax
 	addq $8, %rsp
