@@ -10,10 +10,12 @@ menu:
 	.ascii "5. Exit\n"
 	.string "==========================\n"
 
-.global main
 .extern printf
+
+.global main
 .section .text
 
+# void show_menu(void);
 show_menu:
 	subq $8, %rsp
 
@@ -32,5 +34,6 @@ main:
 	subq $8, %rsp
 	callq show_menu
 
+	xorl %eax, %eax
 	addq $8, %rsp
 	retq
