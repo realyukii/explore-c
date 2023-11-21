@@ -20,7 +20,7 @@ str_fmt_int:
 .global main
 .section .text
 
-# void show_menu(void);
+# int show_menu(void);
 show_menu:
 	subq $8, %rsp
 
@@ -36,6 +36,17 @@ show_menu:
 	movq %rsp, %rsi
 	xorl %eax, %eax
 	callq scanf
+
+	cmpl $1, %eax
+	jl .Lshow_menu_err
+
+	movl (%rsp), %eax
+
+	addq $8, %rsp
+	retq
+
+.Lshow_menu_err:
+	movl $-1, %eax
 
 	addq $8, %rsp
 	retq
