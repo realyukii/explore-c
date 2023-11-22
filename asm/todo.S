@@ -11,11 +11,11 @@ menu:
 	.ascii "==========================\n"
 	.string "Enter the option: "
 invalid_opt:
-	.string "Invalid option!"
+	.string "Invalid option! Press enter to continue..."
 temp_str:
 	.string "Add Data\n"
 str_fmt_int:
-	.string "%d"
+	.string "%d%*c"
 
 .extern printf
 .extern scanf
@@ -62,6 +62,8 @@ menu_add:
 	xorl %eax, %eax
 	callq printf
 
+	callq getchar
+
 	addq $8, %rsp
 	retq
 
@@ -90,6 +92,8 @@ handle_menu:
 	leaq invalid_opt(%rip), %rdi
 	xorl %eax, %eax
 	callq printf
+
+	callq getchar
 
 .Lcontinue_loop:
 	xorl %eax, %eax
