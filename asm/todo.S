@@ -38,7 +38,7 @@ str_fmt_int:
 .global main
 .section .text
 
-# int show_menu(void); todo: exit on ret less than 0
+# int show_menu(void);
 show_menu:
 	subq $8, %rsp
 
@@ -69,7 +69,7 @@ show_menu:
 	addq $8, %rsp
 	retq
 
-# ssize_t open_file(void)
+# ssize_t open_file(void);
 open_file:
 	subq $8, %rsp
 
@@ -104,7 +104,7 @@ open_file:
 	addq $8, %rsp
 	retq
 
-# int menu_add(void)
+# int menu_add(void);
 menu_add:
 	pushq %rbp
 
@@ -123,7 +123,7 @@ menu_add:
 	popq %rbp
 	retq
 
-# void menu_show(void)
+# void menu_show(void);
 menu_show:
 	subq $8, %rsp
 
@@ -136,7 +136,7 @@ menu_show:
 	addq $8, %rsp
 	retq
 
-# void menu_update(void)
+# void menu_update(void);
 menu_update:
 	subq $8, %rsp
 
@@ -149,7 +149,7 @@ menu_update:
 	addq $8, %rsp
 	retq
 
-# void menu_delete(void)
+# void menu_delete(void);
 menu_delete:
 	subq $8, %rsp
 
