@@ -1,3 +1,6 @@
+#define MAX_INPUT_LEN 255
+#define SEEK_END 2
+
 .section .rodata
 clear:
 	.string "\033c"
@@ -20,6 +23,8 @@ invalid_opt:
 	.string "Invalid option! Press enter to continue..."
 error_create_file:
 	.string "Error! Failed to create file %s\n"
+label_add_data:
+	.string "Enter the data: "
 temp_str_add:
 	.string "Add Data\n"
 temp_str_show:
@@ -33,6 +38,11 @@ str_fmt_int:
 
 .extern printf
 .extern scanf
+.extern fgets
+.extern stdin
+.extern strlen
+.extern fwrite
+.extern fseek
 .extern fopen
 
 .global main
@@ -100,26 +110,72 @@ open_file:
 	retq
 
 .Lskip_create:
-	movq	(%rsp), %rax
 	addq	$8, %rsp
 	retq
 
 # int menu_add(void);
 menu_add:
 	pushq	%rbp
+	subq	$256, %rsp
 
 	callq	open_file
 	testq	%rax, %rax
 	jz	.Lmenu_add_err
 	movq	%rax, %rbp
-	# ...
+
+	leaq	label_add_data(%rip), %rdi
+	xorl	%eax, %eax
+	callq	printf
+
+	movq	%rbp, %rdi
+	movl	$0, %esi
+	movl	$SEEK_END, %edx
+	callq	fseek
+
+	leaq	1(%rsp), %rdi
+	movq	$MAX_INPUT_LEN, %rsi
+	movq	stdin(%rip), %rdx
+	callq	fgets
+	testq	%rax, %rax
+	jz	.Lmenu_add_err_close
+
+	movq	%rax, %rdi
+	callq	strlen
+	testq	%rax, %rax
+	jz	.Lmenu_add_err_close
+
+	cmpb	$'\n', (%rsp, %rax)
+	jne	.Lmenu_add_save
+
+	# cut the new line
+	decq	%rax
+
+.Lmenu_add_save:
+	movb	%al, (%rsp)
+
+	# preserve 1 byte for len
+	incb	%al
+
+	movq	%rsp, %rdi
+	movl	$1, %esi
+	movl	%eax, %edx
+	movq	%rbp, %rcx
+	callq	fwrite
+
+	movq	%rbp, %rdi
+	callq	fclose
 
 	xorl	%eax, %eax
+	addq	$256, %rsp
 	popq	%rbp
 	retq
 
+.Lmenu_add_err_close:
+	movq	%rbp, %rdi
+	callq	fclose
 .Lmenu_add_err:
 	movl	$-1, %eax
+	addq	$256, %rsp
 	popq	%rbp
 	retq
 
