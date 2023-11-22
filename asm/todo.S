@@ -35,6 +35,8 @@ temp_str_delete:
 	.string "Delete Data\n"
 str_fmt_int:
 	.string "%d%*c"
+str_fmt_record:
+	.string "%d\. %s\n"
 
 .extern printf
 .extern scanf
@@ -42,6 +44,7 @@ str_fmt_int:
 .extern stdin
 .extern strlen
 .extern fwrite
+.extern fread
 .extern fseek
 .extern fopen
 
@@ -179,17 +182,54 @@ menu_add:
 	popq	%rbp
 	retq
 
-# void menu_show(void);
+# int menu_show(void);
 menu_show:
-	subq $8, %rsp
+	pushq	%rbp
+	pushq	%rbx
+	subq	$(256 + 8), %rsp
 
-	leaq	temp_str_show(%rip), %rdi
+	callq	open_file
+	testq	%rax, %rax
+	jz	.Lmenu_add_err
+	movq	%rax, %rbp
+
+	xorl %ebx, %ebx
+.Lloop_data:
+	movq	%rsp, %rdi
+	movl	$1, %esi
+	movl	$1, %edx
+	movq	%rbp, %rcx
+	callq	fread
+	testq	%rax, %rax
+	jz	.Lmenu_show_exit
+
+
+	leaq	1(%rsp), %rdi
+	movl	$1, %esi
+	movzbl	(%rsp), %edx
+	movq	%rbp, %rcx
+	callq	fread
+	testq	%rax, %rax
+	jz	.Lmenu_show_exit
+
+	# add null terminator
+	movb	$0, 1(%rsp, %rax)
+
+	incl	%ebx
+
+	leaq	str_fmt_record(%rip), %rdi
+	movl	%ebx, %esi
+	leaq	1(%rsp), %rdx
 	xorl	%eax, %eax
 	callq	printf
 
-	callq	getchar
+	jmp	.Lloop_data
 
-	addq	$8, %rsp
+.Lmenu_show_exit:
+	callq	getchar
+	addq	$(256 + 8), %rsp
+	popq	%rbx
+	popq	%rbp
 	retq
 
 # void menu_update(void);
