@@ -73,36 +73,45 @@ handle_menu:
 	je .Lhandle_add
 
 	cmpl $5, %edi
-	je .Lexit
+	je .Lexit_loop
 
 	jne .Linvalid_opt
 
 .Lhandle_add:
 	callq menu_add
-	jmp .Lcontinue
+	jmp .Lcontinue_loop
 
-.Lexit:
+.Lexit_loop:
 	movl $-1, %eax
 	addq $8, %rsp
-	retq	
+	retq
 
 .Linvalid_opt:
 	leaq invalid_opt(%rip), %rdi
 	xorl %eax, %eax
 	callq printf
 
-.Lcontinue:
+.Lcontinue_loop:
 	xorl %eax, %eax
 	addq $8, %rsp
 	retq
 
 main:
 	subq $8, %rsp
+
+.Lloop_program:
 	callq show_menu
+
+	cmpl $-1, %eax
+	je .Lexit_program
 
 	movl %eax, %edi
 	callq handle_menu
 
+	cmpl $-1, %eax
+	jne .Lloop_program
+
+.Lexit_program:
 	xorl %eax, %eax
 	addq $8, %rsp
 	retq
