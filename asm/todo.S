@@ -182,6 +182,40 @@ menu_add:
 	popq	%rbp
 	retq
 
+# size_t iterate_db(FILE *handle, struct data *d)
+iterate_db:
+	pushq	%rbp
+	pushq	%rbx
+	subq	$8, %rsp
+
+	movq	%rdi, %rbp
+	movq	%rsi, %rbx
+
+	movq	%rbx, %rdi
+	movl	$1, %esi
+	movl	$1, %edx
+	movq	%rbp, %rcx
+	callq	fread
+	testq	%rax, %rax
+	jz	.Lexit_iterate_db
+
+	leaq	1(%rbx), %rdi
+	movl	$1, %esi
+	movzbl	(%rbx), %edx
+	movq	%rbp, %rcx
+	callq	fread
+	testq	%rax, %rax
+	jz	.Lexit_iterate_db
+
+	# add null terminator
+	movb	$0, 1(%rbx, %rax)
+
+.Lexit_iterate_db:
+	addq	$8, %rsp
+	popq	%rbx
+	popq	%rbp
+	retq
+
 # int menu_show(void);
 menu_show:
 	pushq	%rbp
@@ -190,30 +224,17 @@ menu_show:
 
 	callq	open_file
 	testq	%rax, %rax
-	jz	.Lmenu_add_err
+	jz	.Lmenu_show_err
 	movq	%rax, %rbp
 
-	xorl %ebx, %ebx
+	xorl	%ebx, %ebx
 .Lloop_data:
-	movq	%rsp, %rdi
-	movl	$1, %esi
-	movl	$1, %edx
-	movq	%rbp, %rcx
-	callq	fread
+	movq	%rbp, %rdi
+	movq	%rsp, %rsi
+	callq	iterate_db
+
 	testq	%rax, %rax
-	jz	.Lmenu_show_exit
-
-
-	leaq	1(%rsp), %rdi
-	movl	$1, %esi
-	movzbl	(%rsp), %edx
-	movq	%rbp, %rcx
-	callq	fread
-	testq	%rax, %rax
-	jz	.Lmenu_show_exit
-
-	# add null terminator
-	movb	$0, 1(%rsp, %rax)
+	jz	.Lmenu_show_close
 
 	incl	%ebx
 
@@ -225,8 +246,13 @@ menu_show:
 
 	jmp	.Lloop_data
 
-.Lmenu_show_exit:
+.Lmenu_show_close:
 	callq	getchar
+
+	movq	%rbp, %rdi
+	callq	fclose
+
+.Lmenu_show_err:
 	addq	$(256 + 8), %rsp
 	popq	%rbx
 	popq	%rbp
