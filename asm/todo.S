@@ -12,8 +12,14 @@ menu:
 	.string "Enter the option: "
 invalid_opt:
 	.string "Invalid option! Press enter to continue..."
-temp_str:
+temp_str_add:
 	.string "Add Data\n"
+temp_str_show:
+	.string "Show Data\n"
+temp_str_update:
+	.string "Update Data\n"
+temp_str_delete:
+	.string "Delete Data\n"
 str_fmt_int:
 	.string "%d%*c"
 
@@ -58,7 +64,46 @@ show_menu:
 menu_add:
 	subq $8, %rsp
 
-	leaq temp_str(%rip), %rdi
+	leaq temp_str_add(%rip), %rdi
+	xorl %eax, %eax
+	callq printf
+
+	callq getchar
+
+	addq $8, %rsp
+	retq
+
+# void menu_show(void)
+menu_show:
+	subq $8, %rsp
+
+	leaq temp_str_show(%rip), %rdi
+	xorl %eax, %eax
+	callq printf
+
+	callq getchar
+
+	addq $8, %rsp
+	retq
+
+# void menu_update(void)
+menu_update:
+	subq $8, %rsp
+
+	leaq temp_str_update(%rip), %rdi
+	xorl %eax, %eax
+	callq printf
+
+	callq getchar
+
+	addq $8, %rsp
+	retq
+
+# void menu_delete(void)
+menu_delete:
+	subq $8, %rsp
+
+	leaq temp_str_delete(%rip), %rdi
 	xorl %eax, %eax
 	callq printf
 
@@ -72,15 +117,33 @@ handle_menu:
 	subq $8, %rsp
 
 	cmpl $1, %edi
-	je .Lhandle_add
+	je .Lhandle_create
+	
+	cmpl $4, %edi
+	je .Lhandle_read
+	
+	cmpl $2, %edi
+	je .Lhandle_update
+	
+	cmpl $3, %edi
+	je .Lhandle_delete
 
 	cmpl $5, %edi
 	je .Lexit_loop
 
 	jne .Linvalid_opt
 
-.Lhandle_add:
+.Lhandle_create:
 	callq menu_add
+	jmp .Lcontinue_loop
+.Lhandle_read:
+	callq menu_show
+	jmp .Lcontinue_loop
+.Lhandle_update:
+	callq menu_update
+	jmp .Lcontinue_loop
+.Lhandle_delete:
+	callq menu_delete
 	jmp .Lcontinue_loop
 
 .Lexit_loop:
