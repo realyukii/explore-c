@@ -311,7 +311,7 @@ menu_delete:
 	leaq	tmp_file_name(%rip), %rdi
 	callq	__open_file
 	testq	%rax, %rax
-	jz	.Lmenu_delete_exit
+	jz	.Lmenu_delete_err
 	movq	%rax, %rbx
 
 	callq	open_file
@@ -350,9 +350,6 @@ menu_delete:
 .Lmenu_delete_err_close_tmp:
 	movq	%rbx, %rdi
 	callq	fclose
-
-	movl	$-1, %eax
-	jmp	.Lmenu_delete_exit
 
 .Lmenu_delete_err:
 	movl	$-1, %eax
