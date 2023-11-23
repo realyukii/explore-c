@@ -6,6 +6,8 @@ clear:
 	.string "\033c"
 file_name:
 	.string "todo_db.bin"
+tmp_file_name:
+	.string "tmp_db.bin"
 open_file_mode:
 	.string "rb+"
 create_file_mode:
@@ -25,6 +27,8 @@ error_create_file:
 	.string "Error! Failed to create file %s\n"
 label_add_data:
 	.string "Enter the data: "
+label_choose_delete:
+	.string "Enter the record ID to delete: "
 temp_str_add:
 	.string "Add Data\n"
 temp_str_show:
@@ -38,6 +42,8 @@ str_fmt_int:
 str_fmt_record:
 	.string "%d\. %s\n"
 
+.extern remove
+.extern rename
 .extern printf
 .extern scanf
 .extern fgets
@@ -82,11 +88,12 @@ show_menu:
 	addq	$8, %rsp
 	retq
 
-# ssize_t open_file(void);
-open_file:
-	subq	$8, %rsp
+# FILE *__open_file(char *file_name)
+__open_file:
+	pushq	%rbp
 
-	leaq	file_name(%rip), %rdi
+	movq	%rdi, %rbp
+
 	leaq	open_file_mode(%rip), %rsi
 	callq	fopen
 
@@ -96,7 +103,7 @@ open_file:
 	jnz	.Lskip_create
 
 .Lfailed_open:
-	leaq	file_name(%rip), %rdi
+	movq	%rbp, %rdi
 	leaq	create_file_mode(%rip), %rsi
 	callq	fopen
 	testq	%rax, %rax
@@ -104,15 +111,25 @@ open_file:
 
 .Lerror_create:
 	leaq	error_create_file(%rip), %rdi
-	leaq	file_name(%rip), %rsi
+	movq	%rbp, %rsi
 	xorl	%eax, %eax
 	callq	printf
 
 	xorl	%eax, %eax
-	addq	$8, %rsp
+	popq	%rbp
 	retq
 
 .Lskip_create:
+	popq	%rbp
+	retq
+
+# FILE *open_file(void);
+open_file:
+	subq	$8, %rsp
+
+	leaq	file_name(%rip), %rdi
+	callq	__open_file
+
 	addq	$8, %rsp
 	retq
 
@@ -228,7 +245,7 @@ menu_show:
 	movq	%rax, %rbp
 
 	xorl	%ebx, %ebx
-.Lloop_data:
+.Lloop_show_data:
 	movq	%rbp, %rdi
 	movq	%rsp, %rsi
 	callq	iterate_db
@@ -244,7 +261,7 @@ menu_show:
 	xorl	%eax, %eax
 	callq	printf
 
-	jmp	.Lloop_data
+	jmp	.Lloop_show_data
 
 .Lmenu_show_close:
 	callq	getchar
@@ -271,17 +288,99 @@ menu_update:
 	addq	$8, %rsp
 	retq
 
-# void menu_delete(void);
+# int menu_delete(void);
 menu_delete:
-	subq	$8, %rsp
+	pushq	%rbp
+	pushq	%rbx
+	pushq	%r12
+	subq	$(256 + 16), %rsp
 
-	leaq	temp_str_delete(%rip), %rdi
-	xorl	%eax, %eax
+	callq	menu_show
+
+	leaq	label_choose_delete(%rip), %rdi
 	callq	printf
 
-	callq	getchar
+	leaq	str_fmt_int(%rip), %rdi
+	leaq	256(%rsp), %rsi
+	xorl	%eax, %eax
+	callq	scanf
 
-	addq	$8, %rsp
+	cmpl	$1, %eax
+	jl	.Lmenu_delete_err
+
+	leaq	tmp_file_name(%rip), %rdi
+	callq	__open_file
+	testq	%rax, %rax
+	jz	.Lmenu_delete_exit
+	movq	%rax, %rbx
+
+	callq	open_file
+	testq	%rax, %rax
+	jz	.Lmenu_delete_err_close_tmp
+	movq	%rax, %rbp
+
+	# reset the counter
+	xorl	%r12d, %r12d
+.Lloop_delete_data:
+	# read from original file
+	movq	%rbp, %rdi
+	movq	%rsp, %rsi
+	callq	iterate_db
+	testq	%rax, %rax
+	jz	.Lmenu_delete_close
+	# preserve 1 byte for len
+	incl	%eax
+	incl	%r12d
+
+	# todo: is it possible with test instead of cmp?
+	cmpl	256(%rsp), %r12d
+	je	.Lloop_delete_data
+
+	# write to temporary file
+	movq	%rsp, %rdi
+	movl	$1, %esi
+	movl	%eax, %edx
+	movq	%rbx, %rcx
+	callq	fwrite
+	# testq	%rax, %rax
+	# jz	.Lmenu_delete_close
+
+	jmp	.Lloop_delete_data
+
+.Lmenu_delete_err_close_tmp:
+	movq	%rbx, %rdi
+	callq	fclose
+
+	movl	$-1, %eax
+	jmp	.Lmenu_delete_exit
+
+.Lmenu_delete_err:
+	movl	$-1, %eax
+	jmp	.Lmenu_delete_exit
+
+.Lmenu_delete_close:
+	# on windows, you need to close first, then able to rename and delete
+	# but we use linux here XD
+	leaq	file_name(%rip), %rdi
+	callq	remove
+
+	leaq	tmp_file_name(%rip), %rdi
+	leaq	file_name(%rip), %rsi
+	callq	rename
+
+	movq	%rbp, %rdi
+	callq	fclose
+
+	movq	%rbx, %rdi
+	callq	fclose
+
+	xorl	%eax, %eax
+
+.Lmenu_delete_exit:
+	addq	$(256 + 16), %rsp
+	popq	%r12
+	popq	%rbx
+	popq	%rbp
 	retq
 
 # int handle_menu(int n);
