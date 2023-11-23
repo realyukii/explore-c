@@ -268,8 +268,12 @@ menu_show:
 
 	movq	%rbp, %rdi
 	callq	fclose
+	movl	%ebx, %eax
+	jmp	.Lmenu_show_exit
 
 .Lmenu_show_err:
+	movl	$-1, %eax
+.Lmenu_show_exit:
 	addq	$(256 + 8), %rsp
 	popq	%rbx
 	popq	%rbp
@@ -293,9 +297,14 @@ menu_delete:
 	pushq	%rbp
 	pushq	%rbx
 	pushq	%r12
-	subq	$(256 + 16), %rsp
+	pushq	%r13
+	subq	$(256 + 8), %rsp
 
+.Lmenu_delete_try_again:
 	callq	menu_show
+	testl	%eax, %eax
+	jl	.Lmenu_delete_err
+	movl	%eax, %r13d
 
 	leaq	label_choose_delete(%rip), %rdi
 	callq	printf
@@ -307,6 +316,12 @@ menu_delete:
 
 	cmpl	$1, %eax
 	jl	.Lmenu_delete_err
+
+	cmpl	$0, 256(%rsp)
+	jle	.Lmenu_delete_invalid
+
+	cmpl	%r13d, 256(%rsp)
+	ja	.Lmenu_delete_invalid
 
 	leaq	tmp_file_name(%rip), %rdi
 	callq	__open_file
@@ -347,6 +362,17 @@ menu_delete:
 
 	jmp	.Lloop_delete_data
 
+.Lmenu_delete_invalid:
+	leaq	clear(%rip), %rdi
+	xorl	%eax, %eax
+	callq	printf
+
+	leaq	invalid_opt(%rip), %rdi
+	xorl	%eax, %eax
+	callq	printf
+	callq	getchar
+	jmp	.Lmenu_delete_try_again
+
 .Lmenu_delete_err_close_tmp:
 	movq	%rbx, %rdi
 	callq	fclose
@@ -374,7 +400,8 @@ menu_delete:
 	xorl	%eax, %eax
 
 .Lmenu_delete_exit:
-	addq	$(256 + 16), %rsp
+	addq	$(256 + 8), %rsp
+	popq	%r13
 	popq	%r12
 	popq	%rbx
 	popq	%rbp
