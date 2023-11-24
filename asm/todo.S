@@ -312,8 +312,6 @@ menu_update:
 	cmpl	%r13d, 512(%rsp)
 	ja	.Lmenu_update_invalid
 
-	# == 06:36:54
-
 	leaq	label_add_data(%rip), %rdi
 	xorl	%eax, %eax
 	callq	printf
@@ -336,7 +334,6 @@ menu_update:
 	# cut the new line
 	decq	%rax
 
-	# ==
 .Lmenu_update_open_file:
 	movb	%al, 256(%rsp)
 
