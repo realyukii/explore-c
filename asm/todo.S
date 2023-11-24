@@ -23,6 +23,8 @@ menu:
 	.string "Enter the option: "
 invalid_opt:
 	.string "Invalid option! Press enter to continue..."
+str_continue:
+	.string "Press enter to continue..."
 error_create_file:
 	.string "Error! Failed to create file %s\n"
 label_add_data:
@@ -44,6 +46,7 @@ str_fmt_int:
 str_fmt_record:
 	.string "%d\. %s\n"
 
+.extern getchar
 .extern remove
 .extern rename
 .extern printf
@@ -266,8 +269,6 @@ menu_show:
 	jmp	.Lloop_show_data
 
 .Lmenu_show_close:
-	callq	getchar
-
 	movq	%rbp, %rdi
 	callq	fclose
 	movl	%ebx, %eax
@@ -567,6 +568,13 @@ handle_menu:
 	jmp	.Lcontinue_loop
 .Lhandle_read:
 	callq	menu_show
+
+	leaq	str_continue(%rip), %rdi
+	xorl	%eax, %eax
+	callq	printf
+
+	callq	getchar
+
 	jmp	.Lcontinue_loop
 .Lhandle_update:
 	callq	menu_update
