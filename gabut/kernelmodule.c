@@ -16,7 +16,24 @@
 * on `man make`
 * - you can always find these keyword: `obj-m`, `M=dir`
 * on https://github.com/microsoft/WSL2-Linux-Kernel/blob/linux-msft-wsl-5.15.y/Makefile
+*
+* summary:
+* so the essential thing is use the custom kernel by update .wslconfig on %userprofile% as mentioned on unix.stackexchange.com
+* and then compiling as usual as instructed in https://tldp.org/LDP/lkmpg/2.6/html/x181.html
+* the last one to do is load it with insmod
+* and see the kernel log for your module with dmesg ^^
+* optional, you can see the detail with modinfo, as mentioned in the tldp.org site
+* 
+* it turns out, I just only need root privilege on insmod command O_o
+*
+* also, wondering why the youtube video not require MODULE_LICENSE,
+* while my mine will error if it isn't include in the .c file
+* and wondering why generating so many files?
+*
+* wondering output from dmesg: loading out-of-tree module taints kernel.
 */
+
+MODULE_LICENSE("GPL");
 
 int init_module(void)
 {

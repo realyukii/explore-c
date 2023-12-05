@@ -13,3 +13,11 @@
 *.lst
 # vscode settings and configuration
 .vscode
+# output from build a kernel module
+.kernel*
+kernelmodule.ko
+kernelmodule.mod*
+.Module*
+.module*
+Module*
+module*
