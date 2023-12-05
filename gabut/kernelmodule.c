@@ -31,6 +31,7 @@
 * and wondering why generating so many files?
 *
 * wondering output from dmesg: loading out-of-tree module taints kernel.
+* but it just warning and someone tell we can just ignore it
 */
 
 MODULE_LICENSE("GPL");
