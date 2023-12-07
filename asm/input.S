@@ -5,7 +5,7 @@ sayHello:
 	.string "Hello "
 
 .section .text
-.global _start
+.global main
 
 strlen:
 	xorl %eax, %eax
@@ -43,16 +43,6 @@ print:
 	syscall
 
 	retq
-
-_start:
-	xorl %ebp, %ebp
-	andq $-16, %rsp
-
-	callq main
-
-	movl %eax, %edi
-	movl $60, %eax
-	syscall
 
 main:
 	subq $40, %rsp

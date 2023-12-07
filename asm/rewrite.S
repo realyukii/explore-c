@@ -7,7 +7,7 @@ labelName:
 yourName:
 	.string "nama anda "
 
-.global _start
+.global main
 .section .text
 strlen:
 	xorl %eax, %eax
@@ -48,7 +48,7 @@ printf:
 
 	retq
 
-_start:
+main:
 	xorl %ebp, %ebp
 	# in psABI document, is it guaranteed by the user code or operating system?
 	# andq $-16, %rsp
@@ -69,3 +69,4 @@ _start:
 	movl $60, %eax
 	xorl %edi, %edi
 	syscall
+	retq

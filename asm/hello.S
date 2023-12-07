@@ -3,9 +3,9 @@ hello_str:
 	.string "Hello World!\n"
 	len = . - hello_str
 
-.global _start
+.global main
 .section .text
-_start:
+main:
 	movl	$1, %eax
 	movl	$1, %edi
 	leaq	hello_str(%rip), %rsi
@@ -15,3 +15,4 @@ _start:
 	movl	$60, %eax
 	xorl	%edi, %edi
 	syscall
+	retq
