@@ -16,6 +16,8 @@
 * on `man make`
 * - you can always find these keyword: `obj-m`, `M=dir`
 * on https://github.com/microsoft/WSL2-Linux-Kernel/blob/linux-msft-wsl-5.15.y/Makefile
+* - https://0xax.gitbooks.io/linux-insides/content/Misc/linux-misc-2.html
+* #:~:text=we will learn what occurs when you execute make in the root directory of the Linux kernel source code.
 *
 * summary:
 * so the essential thing is use the custom kernel by update .wslconfig on %userprofile% as mentioned on unix.stackexchange.com
@@ -23,7 +25,7 @@
 * the last one to do is load it with insmod
 * and see the kernel log for your module with dmesg ^^
 * optional, you can see the detail with modinfo, as mentioned in the tldp.org site
-* 
+*
 * it turns out, I just only need root privilege on insmod command O_o
 *
 * also, wondering why the youtube video not require MODULE_LICENSE,
