@@ -1,7 +1,8 @@
-CC=gcc
 CFLAGS=-Wall -Wextra
-test:
-	touch todo_tmp
-	rm todo_*
+
+all:
 	$(CC) reimpl.c -o main.out $(CFLAGS)
 	./main.out
+
+clean:
+	rm -f todo_data.bin main.out
