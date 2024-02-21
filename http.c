@@ -11,7 +11,6 @@
 */
 int main(void)
 {
-
 	int fd;
 	struct addrinfo hints, *server_addr;
 	const char host[] = "neverssl.com";
