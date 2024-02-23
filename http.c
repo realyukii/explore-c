@@ -4,6 +4,8 @@
 #include <string.h> // memset()
 #include <arpa/inet.h> // struct sockaddr_in, inet_pton(), htons()
 #include <sys/socket.h> // socket(), send(), connect(), recv(), constant AF_INET, SOCK_STREAM
+#include <wolfssl/options.h>
+#include <wolfssl/ssl.h>
 
 /* tag removeable - used for reduce size of binary executable
 *  and not removed only for debugging and implement
@@ -11,24 +13,30 @@
 */
 int main(void)
 {
-	int fd;
+	signed char fd;
+	signed char ret;
 	struct addrinfo hints, *server_addr;
-	const char host[] = "neverssl.com";
+	// use neverssl.com for HTTP-only
+	const char host[] = "tls-v1-2.badssl.com"; 
 	char request[] = "GET / HTTP/1.0\r\n\r\n";
 	char response[5096];
 	int bytes, total;
+	WOLFSSL_CTX *ctx;
+	WOLFSSL *ssl;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags |= AI_CANONNAME;
 
-	if (getaddrinfo(host, NULL, &hints, &server_addr) != 0) {
+	if ((ret = getaddrinfo(host, NULL, &hints, &server_addr)) != 0) {
 		perror("getaddrinfo"); // removeable
-		return -1;
+		goto free_addr;
 	}
 
-	((struct sockaddr_in *)server_addr->ai_addr)->sin_port = htons(80);
+	// change to port 80 for HTTP
+	// the port 1012 is unusual for SSL/TLS btw
+	((struct sockaddr_in *)server_addr->ai_addr)->sin_port = htons(1012);
 
 	char addrstr[100] = {0};
 	inet_ntop(server_addr->ai_family, (void *)&((struct sockaddr_in *)server_addr->ai_addr)->sin_addr, addrstr, 100);
@@ -37,27 +45,57 @@ int main(void)
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd < 0) {
 		perror("socket"); // removeable
-		freeaddrinfo(server_addr); // removeable
-		return -1;
+		ret = -1;
+		goto free_addr;
 	}
 
-	if (connect(fd, server_addr->ai_addr, server_addr->ai_addrlen) < 0) {
+	if ((ret = connect(fd, server_addr->ai_addr, server_addr->ai_addrlen)) < 0) {
 		perror("connect"); // removeable
-		close(fd); // removeable
-		freeaddrinfo(server_addr); // removeable
-		return -1;
+		goto socket_cleanup;
+	}
+
+
+	if ((ret = wolfSSL_Init()) != WOLFSSL_SUCCESS) {
+		fprintf(stderr, "ERROR: Failed to initialize wolfssl\n");
+		goto socket_cleanup;
+	}
+
+	if ((ctx = wolfSSL_CTX_new(wolfTLSv1_2_client_method())) == NULL) {
+		fprintf(stderr, "ERROR: Failed to create WOLFSSL_CTX\n");
+		ret = -1;
+		goto socket_cleanup;
+	}
+
+	if ((ret = wolfSSL_CTX_load_system_CA_certs(ctx)) != WOLFSSL_SUCCESS) {
+		fprintf(stderr, "ERROR: failed to load cer");
+		goto ctx_cleanup;
+	}
+
+	if ((ssl = wolfSSL_new(ctx)) == NULL) {
+		fprintf(stderr, "ERROR: Failed to create WOLFSSL object\n");
+		ret = -1;
+		goto ctx_cleanup;
+	}
+
+	if ((ret = wolfSSL_set_fd(ssl, fd)) != WOLFSSL_SUCCESS) {
+		fprintf(stderr, "ERROR: Failed to set the file descriptor\n");
+		goto cleanup;
+	}
+
+	if ((ret = wolfSSL_connect(ssl)) != WOLFSSL_SUCCESS) {
+		fprintf(stderr, "ERROR: Failed to connect to wolfSSL\n");
+		goto cleanup;
 	}
 
 	printf("Performing HTTP REQUEST...\n%s\n", request);
 	unsigned short sent = 0;
 	total = sizeof(request);
 	do {
-		bytes = send(fd, request + sent, total - sent, 0);
+		bytes = wolfSSL_write(ssl, request + sent, total - sent);
 		if (bytes < 0) {
-			close(fd); // removeable
-			freeaddrinfo(server_addr); // removeable
 			perror("send"); // removeable
-			return -1;
+			ret = -1;
+			goto cleanup;
 		}
 		if (bytes == 0)
 			break;
@@ -69,12 +107,11 @@ int main(void)
 	total = sizeof(response) - 1;
 	unsigned received = 0;
 	do {
-		bytes = recv(fd, response + received, total - received, 0);
+		bytes = wolfSSL_read(ssl, response + received, total - received);
 		if (bytes < 0) {
-			close(fd); // removeable
-			freeaddrinfo(server_addr); // removeable
 			perror("recv"); // removeable
-			return -1;
+			ret = -1;
+			goto cleanup;
 		}
 		if (bytes == 0)
 			break;
@@ -82,17 +119,37 @@ int main(void)
 	} while (received < total);
 
 	if (received == total) {
-		close(fd); // removeable
-		freeaddrinfo(server_addr); // removeable
 		perror("overflow"); // removeable
-		return -1;
+		ret = -1;
+		goto cleanup;
 	}
 
 	printf("response:\n%s\n", response);
+
+	// just for checking the actual length
+	// int i = 0;
+	// char *ptr_char = &response;
+	// while (*ptr_char) {
+	//	ptr_char++;
+	//	i++;
+	// }
+	// printf("%d\n", i);
+
 	printf("TCP packet body length: %d\n", received);
+	while (wolfSSL_shutdown(ssl) == WOLFSSL_SHUTDOWN_NOT_DONE) {
+		puts("shutdown not complete yet");
+	}
+	puts("shutdown complete");
+	ret = 0;
 
-	freeaddrinfo(server_addr); // removeable
+cleanup:
+	wolfSSL_free(ssl);
+ctx_cleanup:
+	wolfSSL_CTX_free(ctx);
+	wolfSSL_Cleanup();
+socket_cleanup:
 	close(fd); // removeable
-
-	return 0;
+free_addr:
+	freeaddrinfo(server_addr); // removeable
+	return ret;
 }
