@@ -53,4 +53,6 @@ done automatically by [gef](https://github.com/hugsy/gef) :v
 
 Used libc: just see the .extern section in the `todo.S` file
 
-### the size of hello world program is less than 9 mb, atleast it's not [120 mb](https://youtu.be/rPVeu4bsn3U?t=630) XD
+### the size of hello world program is less than 12304 bytes (using strip command), atleast it's not [120 mb](https://youtu.be/rPVeu4bsn3U?t=630) XD
+
+tapi kayaknya gada apa2nya sih dibanding sama [ini](https://gist.github.com/willurd/5720255?permalink_comment_id=4934858#gistcomment-4934858) :v
