@@ -11,10 +11,19 @@
 // How it works?
 // The main goal of the program is to reduce the size of the history file
 // by reviewing the sorted history file and manually decide to remove redundant command
-// thus make the file more lightweight, and overwrite it manually after you've done on reviewing it.
+// thus make the file more smoll, and overwrite it manually after you've done on reviewing it.
+//
+// TODO:
+// 1. cara memanipulasi array
+// 2. sifat pointer ketika array digunakan
+//
+// condition and circumtances:
+// the algorithm are relying on newline to separate command,
+// and space character
 
 #include <stdio.h>
-#define HISTORY_FILE ".bash_eternal_history"
+#include <stdlib.h>
+#define HISTORY_FILE "/home/reyuki/.bash_eternal_history"
 
 int main(void)
 {
@@ -24,13 +33,17 @@ int main(void)
 		return 1;
 	}
 
-	printf("ftell: %ld\n", ftell(file_history));
-	char byte;
+
+	char *loaded_buffer = malloc(1024 * 1024);
+	char *shift = loaded_buffer;
 	while (1) {
-		if (fread(&byte, 1, 1, file_history) == 0)
+		if (fread(shift, 1, 1, file_history) == 0) {
+			*shift = '\0';
 			break;
-		putchar(byte);
+		}
+		shift++;
 	}
-	
+	printf("%s\n", loaded_buffer);
+
 	return 0;
 }
