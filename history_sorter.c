@@ -13,17 +13,17 @@
 // by reviewing the sorted history file and manually decide to remove redundant command
 // thus make the file more smoll, and overwrite it manually after you've done on reviewing it.
 //
-// TODO:
-// 1. cara memanipulasi array
-// 2. sifat pointer ketika array digunakan
-//
 // condition and circumtances:
 // the algorithm are relying on newline to separate command,
 // and space character
 
 #include <stdio.h>
+// remove trailing space at the beginning of the command on each line
+// cat ~/.bash_history | sed -e 's/^[[:space:]]*//' > ~/.bash_history_trimmed
+
 #include <stdlib.h>
-#define HISTORY_FILE "/home/reyuki/.bash_eternal_history"
+#include <string.h>
+#define HISTORY_FILE "/home/reyuki/.test_untrimmed"
 
 int main(void)
 {
@@ -33,7 +33,7 @@ int main(void)
 		return 1;
 	}
 
-
+	// make sure to adjust the allocated size with the size of file
 	char *loaded_buffer = malloc(1024 * 1024);
 	char *shift = loaded_buffer;
 	while (1) {
@@ -43,7 +43,29 @@ int main(void)
 		}
 		shift++;
 	}
-	printf("%s\n", loaded_buffer);
+
+	shift = loaded_buffer;
+	int line = 1;
+	do {
+		char pattern[32] = {0};
+		char command[32];
+		
+		// skip the timestamp
+		if (*shift == '#')
+			shift += 12;
+
+		// ensure the string is on the starting line
+		if (*(shift-1) == '\n') {
+			line++;
+			if (*shift == ' ')
+				printf("untrimmed space on line: %d - %c = 0x%x\n", line, *shift, *shift);
+			// mark command as pattern
+			// *pattern = *shift;
+		}
+		shift++;
+	} while (*shift != '\0');
+
+	// printf("%s\n", loaded_buffer);
 
 	return 0;
 }
