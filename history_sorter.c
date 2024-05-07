@@ -2,11 +2,8 @@
 // scanning the entire file contents
 // the stages:
 // 1. looking for the newline 
-// 2. store the result to the data structure, array of offset/pointer to the stream
-// 3. and since we already know or track each buffer on each line, then
-// 4. we can trim spaces in the beginning of each line  and
-// 5. pairing all match command on each time scanning, sorting & re-group the entire file contents
-// 6. so we make sure no paired-command left and thus ready to looking for other command to be sorted
+// 2. load the file contents into variable that contains array of characters a.k.a string.
+// 3. scan the array and perform sorting algorithm
 //
 // How it works?
 // The main goal of the program is to reduce the size of the history file
@@ -17,13 +14,13 @@
 // the algorithm are relying on newline to separate command,
 // and space character
 
-#include <stdio.h>
 // remove trailing space at the beginning of the command on each line
 // cat ~/.bash_history | sed -e 's/^[[:space:]]*//' > ~/.bash_history_trimmed
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define HISTORY_FILE "/home/reyuki/.test_untrimmed"
+#define HISTORY_FILE "/home/reyuki/.bash_eternal_history_trimmed"
 
 int main(void)
 {
@@ -45,7 +42,6 @@ int main(void)
 	}
 
 	shift = loaded_buffer;
-	int line = 1;
 	do {
 		char pattern[32] = {0};
 		char command[32];
@@ -54,13 +50,14 @@ int main(void)
 		if (*shift == '#')
 			shift += 12;
 
-		// ensure the string is on the starting line
+		// ensure the command is on the beginning line
 		if (*(shift-1) == '\n') {
-			line++;
-			if (*shift == ' ')
-				printf("untrimmed space on line: %d - %c = 0x%x\n", line, *shift, *shift);
-			// mark command as pattern
-			// *pattern = *shift;
+			// mark command as pattern, renew pattern each time (...)
+			int i = 0;
+			while (*shift != ' ')
+				pattern[i++] = *(shift++);
+			pattern[i] = '\0';
+			printf("%s\n", pattern);
 		}
 		shift++;
 	} while (*shift != '\0');
