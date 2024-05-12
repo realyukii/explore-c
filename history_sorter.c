@@ -2,17 +2,13 @@
 // scanning the entire file contents
 // the stages:
 // 1. looking for the newline 
-// 2. load the file contents into variable that contains array of characters a.k.a string.
+// 2. load the file contents into a variable
 // 3. scan the array and perform sorting algorithm
 //
-// How it works?
+// The purpose of program?
 // The main goal of the program is to reduce the size of the history file
 // by reviewing the sorted history file and manually decide to remove redundant command
 // thus make the file more smoll, and overwrite it manually after you've done on reviewing it.
-//
-// condition and circumtances:
-// the algorithm are relying on newline to separate command,
-// and space character
 
 // remove trailing space at the beginning of the command on each line
 // cat ~/.bash_history | sed -e 's/^[[:space:]]*//' > ~/.bash_history_trimmed
@@ -31,21 +27,31 @@ int main(void)
 	}
 
 	// make sure to adjust the allocated size with the size of file
-	char *loaded_buffer = malloc(1024 * 1024);
+	char *loaded_buffer = calloc(1, 1024 * 1024);
 	char *shift = loaded_buffer;
 	while (1) {
-		if (fread(shift, 1, 1, file_history) == 0) {
-			*shift = '\0';
+		if (fread(shift, 1, 1, file_history) == 0)
 			break;
-		}
 		shift++;
 	}
 
+	int incr = 0;
+	shift = loaded_buffer;
+	while (*shift != '\0') {
+		if (*shift == '#')
+			shift += 12;
+		if (*shift == '\n') {
+		}
+		incr++;
+		shift++;
+	}
+	printf("%d\n", incr);
+	exit(0);
+
+	char pattern[32] = {0};
+	char *next_ptr;
 	shift = loaded_buffer;
 	do {
-		char pattern[32] = {0};
-		char command[32];
-		
 		// skip the timestamp
 		if (*shift == '#')
 			shift += 12;
@@ -58,7 +64,19 @@ int main(void)
 				pattern[i++] = *(shift++);
 			pattern[i] = '\0';
 			printf("%s\n", pattern);
+			// put the next_ptr on the next newline
+			while (shift++) {
+				if (*shift == '\n') {
+					next_ptr = shift+1;
+					break;
+				}
+			}
+
+			// determina swapping or not by:
+			// check if the next command are same or not
+			// while (*shift != ' ')
 		}
+		
 		shift++;
 	} while (*shift != '\0');
 
