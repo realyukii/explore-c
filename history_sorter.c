@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define UNIX_TIMESTAMP_LEN (1 + 10 + 1)
 #define HISTORY_FILE "/home/reyuki/.bash_eternal_history_trimmed"
 
 int compare_strings(const void *a, const void *b)
@@ -25,7 +26,7 @@ int compare_strings(const void *a, const void *b)
 	const char *str2 = *(const char **)b;
 
 	// TODO: order by unixtimestamp
-	return strcmp(str1+12, str2+12);
+	return strcmp(str1+UNIX_TIMESTAMP_LEN, str2+12);
 }
 
 int main(void)
@@ -49,13 +50,13 @@ int main(void)
 		int current_line = strlen(line);
 		len += current_line;
 
-		if (current_line == 12
+		if (current_line == UNIX_TIMESTAMP_LEN
 				&& line[0] == '#'
 				&& isdigit(line[1])
 				&& isdigit(line[10])
 				&& isinserted) {
 			isinserted = 0;
-			len -= 12;
+			len -= UNIX_TIMESTAMP_LEN;
 
 			// Remove trailing newline (if present)
 			if (len > 0 && str[len-1] == '\n')
@@ -71,14 +72,14 @@ int main(void)
 			// Add the string pointer to the array
 			strings[num_strings - 1] = str;
 
-			str = malloc(12+1);
+			str = malloc(UNIX_TIMESTAMP_LEN+1);
 			if (!str) {
 				perror("malloc");
 				exit(1);
 			}
 
 			strcpy(str, line);
-			len = 12;
+			len = UNIX_TIMESTAMP_LEN;
 			continue;
 		} else
 			isinserted = 1;
