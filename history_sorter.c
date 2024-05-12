@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define UNIX_TIMESTAMP_LEN (1 + 10 + 1)
 #define HISTORY_FILE "/home/reyuki/.bash_eternal_history_trimmed"
 
@@ -24,8 +25,8 @@ int compare_strings(const void *a, const void *b)
 {
 	const char *str1 = *(char **)a;
 	const char *str2 = *(char **)b;
-	char time1[UNIX_TIMESTAMP_LEN+1];
-	char time2[UNIX_TIMESTAMP_LEN+1];
+	// char time1[UNIX_TIMESTAMP_LEN+1];
+	// char time2[UNIX_TIMESTAMP_LEN+1];
 
 	const int result = strcmp(str1+UNIX_TIMESTAMP_LEN, str2+UNIX_TIMESTAMP_LEN);
 	// uncomment these line for sorting based on unix timestamp
