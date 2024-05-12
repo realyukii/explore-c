@@ -22,11 +22,21 @@
 
 int compare_strings(const void *a, const void *b)
 {
-	const char *str1 = *(const char **)a;
-	const char *str2 = *(const char **)b;
+	const char *str1 = *(char **)a;
+	const char *str2 = *(char **)b;
+	char time1[UNIX_TIMESTAMP_LEN+1];
+	char time2[UNIX_TIMESTAMP_LEN+1];
 
-	// TODO: order by unixtimestamp
-	return strcmp(str1+UNIX_TIMESTAMP_LEN, str2+12);
+	const int result = strcmp(str1+UNIX_TIMESTAMP_LEN, str2+UNIX_TIMESTAMP_LEN);
+	// uncomment these line for sorting based on unix timestamp
+	// for (int i = 0; i < UNIX_TIMESTAMP_LEN; i++) {
+		// time1[i] = str1[i];
+		// time2[i] = str2[i];
+	// }
+	// time1[UNIX_TIMESTAMP_LEN] = '\0';
+	// time2[UNIX_TIMESTAMP_LEN] = '\0';
+	// const int result = strcmp(time1, time2);
+	return result;
 }
 
 int main(void)
