@@ -19,7 +19,7 @@
 #include <string.h>
 
 #define UNIX_TIMESTAMP_LEN (1 + 10 + 1)
-#define HISTORY_FILE "/home/reyuki/.bash_eternal_history_trimmed"
+#define HISTORY_FILE "/home/reyuki/.bash_eternal_history_testing"
 
 int compare_strings(const void *a, const void *b)
 {
@@ -104,10 +104,29 @@ int main(void)
 	}
 
 	fclose(file_history);
+	
+	// Remove exact duplicate
+	int deleted;
+	do {
+		deleted = 0;
+		for (int i = 0; i < num_strings-1; i++) {
+			for (int j = i; j < num_strings-1;) {
+				j++;
+				if (!strcmp(strings[i]+12, strings[j]+12)) {
+					deleted = 1;
+					strings[j] = strings[num_strings-1];
+					num_strings--;
+				}
+			}
+		}
+	} while(deleted);
+
 	qsort(strings, num_strings, sizeof(char *), compare_strings);
+
 	// Print the sorted strings
 	for (int i = 0; i < num_strings; i++)
 		printf("%s\n", strings[i]);
+
 
 	return 0;
 }
