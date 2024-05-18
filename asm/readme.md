@@ -53,6 +53,15 @@ done automatically by [gef](https://github.com/hugsy/gef) :v
 
 Used libc: just see the .extern section in the `todo.S` file
 
-### the size of hello world program is less than 12304 bytes (using strip command), atleast it's not [120 mb](https://youtu.be/rPVeu4bsn3U?t=630) XD
+### lightweight hello world program
+this program designed to be lightweight as smol as possible, by stripping all symbol, minimum elf header and no main section
 
-tapi kayaknya gada apa2nya sih dibanding sama [ini](https://gist.github.com/willurd/5720255?permalink_comment_id=4934858#gistcomment-4934858) :v
+how to compile:
+```
+as hello_v2.S -o hemlo.o
+ld --strip-all --omagic hemlo.o -o hemlo
+```
+
+the size of hello world program is 696 bytes (optimized), atleast it's not [120 mb](https://youtu.be/rPVeu4bsn3U?t=630) XD
+
+tapi ada program di sebuah [gist](https://gist.github.com/willurd/5720255?permalink_comment_id=4934858#gistcomment-4934858), program web server yang hanya berukuran 228 bytes doang njir :v
