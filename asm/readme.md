@@ -62,6 +62,6 @@ as hello_v2.S -o hemlo.o
 ld --strip-all --omagic hemlo.o -o hemlo
 ```
 
-the size of hello world program is 696 bytes (optimized), atleast it's not [120 mb](https://youtu.be/rPVeu4bsn3U?t=630) XD
+the size of hello world program is 624 bytes (optimized), atleast it's not [120 mb](https://youtu.be/rPVeu4bsn3U?t=630) XD
 
 tapi ada program di sebuah [gist](https://gist.github.com/willurd/5720255?permalink_comment_id=4934858#gistcomment-4934858), program web server yang hanya berukuran 228 bytes doang njir :v
