@@ -60,11 +60,12 @@ how to compile:
 ```
 as hello_64.S -o hemlo.o
 ld --strip-all --omagic hemlo.o -o hemlo
+strip --remove-section=.note.gnu.property hemlo
 ```
 
 for compiling 32-bit version: just add `--32` to `as` and `-melf_i386` to `ld` command.
 
-the size of hello world program is 624 Bytes (optimized) and 432 Bytes for 32-bit version.
+the size of hello world program is 624 Bytes (optimized) and 332 Bytes for 32-bit version.
 
 atleast it's not [120 MB](https://youtu.be/rPVeu4bsn3U?t=630) XD
 
