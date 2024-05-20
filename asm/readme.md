@@ -67,6 +67,8 @@ for compiling 32-bit version: just add `--32` to `as` and `-melf_i386` to `ld` c
 
 the size of hello world program is 624 Bytes (optimized) and 332 Bytes for 32-bit version.
 
+and 128 bytes for extreme version, see [this post](https://reverseengineering.stackexchange.com/questions/32975/reduce-size-of-executable-elf-program/32976#32976) for further info
+
 atleast it's not [120 MB](https://youtu.be/rPVeu4bsn3U?t=630) XD
 
 tapi ada program di sebuah [gist](https://gist.github.com/willurd/5720255?permalink_comment_id=4934858#gistcomment-4934858), program web server yang hanya berukuran 228 bytes doang njir :v
