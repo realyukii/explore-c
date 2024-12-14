@@ -100,10 +100,30 @@ int main(void)
 			long factorial_n = factorial(sanitized_n);
 			long factorial_nr = factorial(sanitized_n - sanitized_r);
 			long factorial_r = factorial(sanitized_r);
-			printf("factorial_n: %ld\nfactorial_nr: %ld\nfactorial_r: %ld\n", factorial_n, factorial_nr, factorial_r);
 			printf("The result is %ld possible combination exists\n", factorial_n/factorial_nr/factorial_r);
 		} else if (response == '3') {
-			puts("not implemented yet.");
+			printf("The formula is: (r + n - 1)! / (n - r)! * r!\n");
+			long sanitized_n, sanitized_r;
+
+			printf("Please enter number for n: ");
+			// remove any trailing new line from previous input
+			getchar();
+			fgets(number, DIGIT, stdin);
+			
+			sanitized_n = convert_to_int(number);
+
+			// clear the input buffer: https://stackoverflow.com/questions/7898215/how-can-i-clear-an-input-buffer-in-c
+			// while ((response = getchar()) != '\n' && response != EOF) { }
+
+			printf("Please enter number for r: ");
+			fgets(number, DIGIT, stdin);
+
+			sanitized_r = convert_to_int(number);
+
+			long factorial_nplusrminus1 = factorial(sanitized_n + sanitized_r - 1);
+			long factorial_nminus1 = factorial(sanitized_n - 1);
+			long factorial_r = factorial(sanitized_r);
+			printf("The result is %ld possible combination exists\n", factorial_nplusrminus1/factorial_nminus1/factorial_r);
 		} else {
 			printf("Your response %c is invalid\n", response);
 			break;
